@@ -221,7 +221,7 @@ formulation = one_lineup_Type_1
 
 
 
-function create_lineups(num_lineups, num_overlap, path_oPlayers, path_defenses, formulation, path_to_output)
+function create_lineups(num_lineups, num_overlap, path_oPlayers, path_qbs path_defenses, formulation, path_to_output)
     #=
     num_lineups is an integer that is the number of lineups
     num_overlap is an integer that gives the overlap between each lineup
