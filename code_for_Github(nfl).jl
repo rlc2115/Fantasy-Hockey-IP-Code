@@ -32,7 +32,7 @@ num_overlap = 7
 path_players = "example_players.csv"
 
 # path_goalies is a string that gives the path to the csv file with the goalies information (see example file for suggested format)
-path_defenses = "defenses_goalies.csv"
+path_defenses = "example_defenses.csv"
 
 # path_to_output is a string that gives the path to the csv file that will give the outputted results
 path_to_output= "output.csv"
@@ -74,7 +74,7 @@ function one_lineup_no_stacking(players, defenses, lineups, num_overlap, num_pla
     # Financial Constraint
     @addConstraint(m, sum{players[i,:Salary]*players_lineup[i], i=1:num_players} + sum{defenses[i,:Salary]*defenses_lineup[i], i=1:num_defenses} <= 50000)
 
-    # at least 3 different teams for the 8 skaters constraints
+    # at least 3 different teams for the 8 players constraints
     @defVar(m, used_team[i=1:num_teams], Bin)
     @addConstraint(m, constr[i=1:num_teams], used_team[i] <= sum{players_teams[t, i]*players_lineup[t], t=1:num_players})
     @addConstraint(m, sum{used_team[i], i=1:num_teams} >= 3)
@@ -110,7 +110,7 @@ function one_lineup_no_stacking(players, defenses, lineups, num_overlap, num_pla
                 players_lineup_copy = vcat(players_lineup_copy, fill(0,1))
             end
         end
-        return(skaters_lineup_copy)
+        return(players_lineup_copy)
     end
 end
 
@@ -245,7 +245,7 @@ function create_lineups(num_lineups, num_overlap, path_players, path_defenses, f
     # Number of skaters
     num_players = size(players)[1]
 
-    # Number of goalies
+    # Number of defenses
     num_defenses = size(defenses)[1]
 
     # wrs stores the information on which players are wrs
