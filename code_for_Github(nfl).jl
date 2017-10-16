@@ -221,11 +221,11 @@ formulation = one_lineup_Type_1
 
 
 
-function create_lineups(num_lineups, num_overlap, path_qbs, path_oPlayers, path_defenses, formulation, path_to_output)
+function create_lineups(num_lineups, num_overlap, path_oPlayers, path_defenses, formulation, path_to_output)
     #=
     num_lineups is an integer that is the number of lineups
     num_overlap is an integer that gives the overlap between each lineup
-    path_players is a string that gives the path to the players csv file
+    path_oPlayers is a string that gives the path to the players csv file
     path_defenses is a string that gives the path to the defenses csv file
     formulation is the type of formulation you would like to use (for instance one_lineup_Type_1, one_lineup_Type_2, etc.)
     path_to_output is a string where the final csv file with your lineups will be
