@@ -181,7 +181,7 @@ function one_lineup_Type_1(players, defenses, lineups, num_overlap, num_players,
 
 
     # Solve the integer programming problem
-    println("Solving Problem..."
+    println("Solving Problem...")
     @printf("\n")
     status = solve(m);
 
