@@ -40,11 +40,11 @@ path_to_output= "output.csv"
 
 
 # This is a function that creates one lineup using the No Stacking formulation from the paper
-function one_lineup_no_stacking(players, defenses, lineups, num_overlap, num_players, num_defenses, qbs, rbs, wrs, tes, num_teams, players_teams, defenses_opponents, team_lines, num_lines, P1_info)
+function one_lineup_no_stackin(oPplayers, defenses, lineups, num_overlap, num_players, num_defenses, qbs, rbs, wrs, tes, num_teams, oPlayers_teams, defenses_opponents, team_lines, num_lines, P1_info)
     m = Model(solver=GLPKSolverMIP())
 
     # Variable for players in lineup.
-    @defVar(m, players_lineup[i=1:num_players], Bin)
+    @defVar(m,oPlayers_lineup[i=1:num_oPlayers], Bin)
 
     # Variable for defenses in lineup.
     @defVar(m, defenses_lineup[i=1:num_defenses], Bin)
@@ -54,37 +54,37 @@ function one_lineup_no_stacking(players, defenses, lineups, num_overlap, num_pla
     @addConstraint(m, sum{defenses_lineup[i], i=1:num_defenses} == 1)
 
     # Eight players constraint
-    @addConstraint(m, sum{players_lineup[i], i=1:num_players} == 8)
+    @addConstraint(m, sum{oPlayers_lineup[i], i=1:num_oPlayers} == 8)
     
     # One qb constraint
-    @addConstraint(m, sum{players_lineup[i], i=1:num_players} == 1)
+    @addConstraint(m, sum{oPlayers_lineup[i], i=1:num_oPlayers} == 1)
 
     # between 2 and 3 rbs
-    @addConstraint(m, sum{rbs[i]*players_lineup[i], i=1:num_players} <= 3)
-    @addConstraint(m, 2 <= sum{rbs[i]*players_lineup[i], i=1:num_players})
+    @addConstraint(m, sum{rbs[i]*oPlayers_lineup[i], i=1:num_oPlayers} <= 3)
+    @addConstraint(m, 2 <= sum{rbs[i]*oPlayers_lineup[i], i=1:num_oPlayers})
 
     # between 3 and 4 wrs
-    @addConstraint(m, sum{wrs[i]*players_lineup[i], i=1:num_players} <= 4)
+    @addConstraint(m, sum{wrs[i]*oPlayers_lineup[i], i=1:num_oPlayers} <= 4)
     @addConstraint(m, 3<=sum{wrs[i]*players_lineup[i], i=1:num_players})
 
     # between 1 and 2 tes
-    @addConstraint(m, 2 <= sum{tes[i]*players_lineup[i], i=1:num_players})
-    @addConstraint(m, sum{tes[i]*players_lineup[i], i=1:num_players} <= 3)
+    @addConstraint(m, 2 <= sum{tes[i]*oPlayers_lineup[i], i=1:num_oPlayers})
+    @addConstraint(m, sum{tes[i]*oPlayers_lineup[i], i=1:num_oPlayers} <= 3)
 
     # Financial Constraint
-    @addConstraint(m, sum{players[i,:Salary]*players_lineup[i], i=1:num_players} + sum{defenses[i,:Salary]*defenses_lineup[i], i=1:num_defenses} <= 50000)
+    @addConstraint(m, sum{oPlayers[i,:Salary]*oPlayers_lineup[i], i=1:num_oPlayers} + sum{defenses[i,:Salary]*defenses_lineup[i], i=1:num_defenses} <= 50000)
 
     # at least 3 different teams for the 8 players constraints
     @defVar(m, used_team[i=1:num_teams], Bin)
-    @addConstraint(m, constr[i=1:num_teams], used_team[i] <= sum{players_teams[t, i]*players_lineup[t], t=1:num_players})
+    @addConstraint(m, constr[i=1:num_teams], used_team[i] <= sum{oPlayers_teams[t, i]*oPlayers_lineup[t], t=1:num_oPlayers})
     @addConstraint(m, sum{used_team[i], i=1:num_teams} >= 3)
 
     # Overlap Constraint
-    @addConstraint(m, constr[i=1:size(lineups)[2]], sum{lineups[j,i]*players_lineup[j], j=1:num_players} + sum{lineups[num_players+j,i]*defenses_lineup[j], j=1:num_defenses} <= num_overlap)
+    @addConstraint(m, constr[i=1:size(lineups)[2]], sum{lineups[j,i]*oPlayers_lineup[j], j=1:num_oPlayers} + sum{lineups[num_oPlayers+j,i]*defenses_lineup[j], j=1:num_defenses} <= num_overlap)
 
 
     # Objective
-    @setObjective(m, Max, sum{players[i,:Projection]*players_lineup[i], i=1:num_players} + sum{defenses[i,:Projection]*defenses_lineup[i], i=1:num_defenses})
+    @setObjective(m, Max, sum{oPlayers[i,:Projection]*oPlayers_lineup[i], i=1:num_players} + sum{defenses[i,:Projection]*defenses_lineup[i], i=1:num_defenses})
 
 
     # Solve the integer programming problem
@@ -95,22 +95,22 @@ function one_lineup_no_stacking(players, defenses, lineups, num_overlap, num_pla
 
     # Puts the output of one lineup into a format that will be used later
     if status==:Optimal
-        players_lineup_copy = Array(Int64, 0)
-        for i=1:num_players
-            if getValue(players_lineup[i]) >= 0.9 && getValue(players_lineup[i]) <= 1.1
-                players_lineup_copy = vcat(players_lineup_copy, fill(1,1))
+        oPlayers_lineup_copy = Array(Int64, 0)
+        for i=1:num_oPlayers
+            if getValue(oPlayers_lineup[i]) >= 0.9 && getValue(oPlayers_lineup[i]) <= 1.1
+                oPlayers_lineup_copy = vcat(oPlayers_lineup_copy, fill(1,1))
             else
-                players_lineup_copy = vcat(players_lineup_copy, fill(0,1))
+                oPlayers_lineup_copy = vcat(oPlayers_lineup_copy, fill(0,1))
             end
         end
         for i=1:num_defenses
             if getValue(defenses_lineup[i]) >= 0.9 && getValue(defenses_lineup[i]) <= 1.1
-                players_lineup_copy = vcat(players_lineup_copy, fill(1,1))
+                oPlayers_lineup_copy = vcat(oPlayers_lineup_copy, fill(1,1))
             else
-                players_lineup_copy = vcat(players_lineup_copy, fill(0,1))
+                oPlayers_lineup_copy = vcat(oPlayers_lineup_copy, fill(0,1))
             end
         end
-        return(players_lineup_copy)
+        return(oPlayers_lineup_copy)
     end
 end
 
@@ -119,11 +119,11 @@ end
 
 
 # This is a function that creates one lineup using the Type 1 formulation from the paper
-function one_lineup_Type_1(players, defenses, lineups, num_overlap, num_players, num_defenses, qbs, rbs, tes, num_teams, players_teams, defenses_opponents, team_lines, num_lines, P1_info)
+function one_lineup_Type_1(players, defenses, lineups, num_overlap, num_oPlayers, num_defenses, qbs, rbs, tes, num_teams, players_teams, defenses_opponents, team_lines, num_lines, P1_info)
     m = Model(solver=GLPKSolverMIP())
 
     # Variable for players in lineup
-    @defVar(m, players_lineup[i=1:num_players], Bin)
+    @defVar(m, oPlayers_lineup[i=1:num_oPlayers], Bin)
 
     # Variable for defenses in lineup
     @defVar(m, defenses_lineup[i=1:num_defenses], Bin)
@@ -133,51 +133,51 @@ function one_lineup_Type_1(players, defenses, lineups, num_overlap, num_players,
     @addConstraint(m, sum{defenses_lineup[i], i=1:num_defenses} == 1)
 
     # Eight players constraint
-    @addConstraint(m, sum{players_lineup[i], i=1:num_players} == 8)
+    @addConstraint(m, sum{oPlayers_lineup[i], i=1:num_oPlayers} == 8)
     
     # One QB constraint
-    @addConstraint(m, sum{players_lineups[i], i=1:num_players} == 1)
+    @addConstraint(m, sum{oPlayers_lineups[i], i=1:num_oPlayers} == 1)
 
 
     # between 2 and 3 RBs
-    @addConstraint(m, sum{rbs[i]*players_lineup[i], i=1:num_players} <= 3)
-    @addConstraint(m, 2 <= sum{rbs[i]*players_lineup[i], i=1:num_players})
+    @addConstraint(m, sum{rbs[i]*oPlayers_lineup[i], i=1:num_oPlayers} <= 3)
+    @addConstraint(m, 2 <= sum{rbs[i]*oPlayers_lineup[i], i=1:num_oPlayers})
 
     # between 3 and 4 wrs
-    @addConstraint(m, sum{wrs[i]*players_lineup[i], i=1:num_players} <= 4)
-    @addConstraint(m, 3<=sum{wrs[i]*players_lineup[i], i=1:num_players})
+    @addConstraint(m, sum{wrs[i]*oPlayers_lineup[i], i=1:num_oPlayers} <= 4)
+    @addConstraint(m, 3<=sum{wrs[i]*oPlayers_lineup[i], i=1:num_oPlayers})
 
     # between 1 and 2 tes
-    @addConstraint(m, 2 <= sum{tes[i]*players_lineup[i], i=1:num_players})
-    @addConstraint(m, sum{tes[i]*players_lineup[i], i=1:num_players} <= 3)
+    @addConstraint(m, 2 <= sum{tes[i]*oPlayers_lineup[i], i=1:num_oPlayers})
+    @addConstraint(m, sum{tes[i]*oPlayers_lineup[i], i=1:num_oPlayers} <= 3)
 
 
     # Financial Constraint
-    @addConstraint(m, sum{players[i,:Salary]*players_lineup[i], i=1:num_players} + sum{defenses[i,:Salary]*defenses_lineup[i], i=1:num_defenses} <= 50000)
+    @addConstraint(m, sum{oPlayers[i,:Salary]*oPlayers_lineup[i], i=1:num_oPlayers} + sum{defenses[i,:Salary]*defenses_lineup[i], i=1:num_defenses} <= 50000)
 
 
     # At least 3 different teams for the 8 players constraint
     @defVar(m, used_team[i=1:num_teams], Bin)
-    @addConstraint(m, constr[i=1:num_teams], used_team[i] <= sum{players_teams[t, i]*players_lineup[t], t=1:num_players})
+    @addConstraint(m, constr[i=1:num_teams], used_team[i] <= sum{oPlayers_teams[t, i]*oPlayers_lineup[t], t=1:num_oPlayers})
     @addConstraint(m, sum{used_team[i], i=1:num_teams} >= 3)
 
 
     # No defenses going against players constraint
-    @addConstraint(m, constr[i=1:num_defenses], 8*defenses_lineup[i] + sum{defenses_opponents[k, i]*players_lineup[k], k=1:num_players}<=8)
+    @addConstraint(m, constr[i=1:num_defenses], 8*defenses_lineup[i] + sum{defenses_opponents[k, i]*oPlayers_lineup[k], k=1:num_oPlayers}<=8)
 
 
     # Must have at least one QB/WR or QB/TE 
     @defVar(m, line_stack[i=1:num_lines], Bin)
-    @addConstraint(m, constr[i=1:num_lines], 2*line_stack[i] <= sum{team_lines[k,i]*players_lineup[k], k=1:num_players})
+    @addConstraint(m, constr[i=1:num_lines], 2*line_stack[i] <= sum{team_lines[k,i]*oPlayers_lineup[k], k=1:num_oPlayers})
     @addConstraint(m, sum{line_stack[i], i=1:num_lines} >= 1)
 
 
     # Overlap Constraint
-    @addConstraint(m, constr[i=1:size(lineups)[2]], sum{lineups[j,i]*players_lineup[j], j=1:num_players} + sum{lineups[num_players+j,i]*defenses_lineup[j], j=1:num_defenses} <= num_overlap)
+    @addConstraint(m, constr[i=1:size(lineups)[2]], sum{lineups[j,i]*oPlayers_lineup[j], j=1:num_oPlayers} + sum{lineups[num_oPlayers+j,i]*defenses_lineup[j], j=1:num_defenses} <= num_overlap)
 
 
     # Objective
-    @setObjective(m, Max, sum{players[i,:Projection]*players_lineup[i], i=1:num_players} + sum{defenses[i,:Projection]*defenses_lineup[i], i=1:num_defenses} )
+    @setObjective(m, Max, sum{oPlayers[i,:Projection]*oPlayers_lineup[i], i=1:num_oPlayers} + sum{defenses[i,:Projection]*defenses_lineup[i], i=1:num_defenses} )
 
 
     # Solve the integer programming problem
@@ -188,22 +188,22 @@ function one_lineup_Type_1(players, defenses, lineups, num_overlap, num_players,
 
     # Puts the output of one lineup into a format that will be used later
     if status==:Optimal
-        players_lineup_copy = Array(Int64, 0)
-        for i=1:num_players
-            if getValue(players_lineup[i]) >= 0.9 && getValue(players_lineup[i]) <= 1.1
-                players_lineup_copy = vcat(players_lineup_copy, fill(1,1))
+        oPlayers_lineup_copy = Array(Int64, 0)
+        for i=1:num_oPlayers
+            if getValue(oPlayers_lineup[i]) >= 0.9 && getValue(oPlayers_lineup[i]) <= 1.1
+                oPlayers_lineup_copy = vcat(oPlayers_lineup_copy, fill(1,1))
             else
-                players_lineup_copy = vcat(players_lineup_copy, fill(0,1))
+                oPlayers_lineup_copy = vcat(oPlayers_lineup_copy, fill(0,1))
             end
         end
         for i=1:num_defeneses
             if getValue(defenses_lineup[i]) >= 0.9 && getValue(defenses_lineup[i]) <= 1.1
-                players_lineup_copy = vcat(players_lineup_copy, fill(1,1))
+                oPlayers_lineup_copy = vcat(oPlayers_lineup_copy, fill(1,1))
             else
-                players_lineup_copy = vcat(players_lineup_copy, fill(0,1))
+                oPlayers_lineup_copy = vcat(oPlayers_lineup_copy, fill(0,1))
             end
         end
-        return(players_lineup_copy)
+        return(oPlayers_lineup_copy)
     end
 end
 
@@ -221,7 +221,7 @@ formulation = one_lineup_Type_1
 
 
 
-function create_lineups(num_lineups, num_overlap, path_players, path_defenses, formulation, path_to_output)
+function create_lineups(num_lineups, num_overlap, path_oPlayers, path_defenses, formulation, path_to_output)
     #=
     num_lineups is an integer that is the number of lineups
     num_overlap is an integer that gives the overlap between each lineup
