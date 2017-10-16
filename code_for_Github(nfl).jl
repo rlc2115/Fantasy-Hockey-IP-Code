@@ -221,7 +221,7 @@ formulation = one_lineup_Type_1
 
 
 
-function create_lineups(num_lineups, num_overlap, path_oPlayers, path_qbs, path_defenses, formulation, path_to_output)
+function create_lineups(num_lineups, num_overlap, path_oPlayers, path_defenses, formulation, path_to_output)
     #=
     num_lineups is an integer that is the number of lineups
     num_overlap is an integer that gives the overlap between each lineup
@@ -233,13 +233,13 @@ function create_lineups(num_lineups, num_overlap, path_oPlayers, path_qbs, path_
 
 
     # Load information for playerstable
-    players = readtable(path_players)
+    oPlayers = readtable(path_players)
 
     # Load information for goalies table
     defenses = readtable(path_defenses)
 
     # Number of skaters
-    num_players = size(players)[1]
+    num_oPlayers = size(players)[1]
 
     # Number of defenses
     num_defenses = size(defenses)[1]
@@ -257,7 +257,7 @@ function create_lineups(num_lineups, num_overlap, path_oPlayers, path_qbs, path_
     Process the position information in the players file to populate the wrs,
     rbs, tes, and defenses with the corresponding correct information
     =#
-    for i =1:num_players
+    for i =1:num_oPlayers
         if players[i,:Position] == "qb"
             qbs=vcat(qbs,fill(1,1))
             rbs=vcat(rbs,fill(0,1))
@@ -289,31 +289,31 @@ function create_lineups(num_lineups, num_overlap, path_oPlayers, path_qbs, path_
 
 
     # Create team indicators from the information in the players file
-    teams = unique(players[:Team])
+    teams = unique(oPlayers[:Team])
 
     # Total number of teams
     num_teams = size(teams)[1]
 
     # player_info stores information on which team each player is on
-    player_info = zeros(Int, size(teams)[1])
+    oPlayer_info = zeros(Int, size(teams)[1])
 
     # Populate player_info with the corresponding information
     for j=1:size(teams)[1]
-        if players[1, :Team] == teams[j]
-            player_info[j] =1
+        if oPlayers[1, :Team] == teams[j]
+            oPlayer_info[j] =1
         end
     end
-    players_teams = player_info'
+    oPlayers_teams = oPlayer_info'
 
 
-    for i=2:num_players
-        player_info = zeros(Int, size(teams)[1])
+    for i=2:num_oPlayers
+        oPlayer_info = zeros(Int, size(teams)[1])
         for j=1:size(teams)[1]
-            if player[i, :Team] == teams[j]
-                player_info[j] =1
+            if oPlayer[i, :Team] == teams[j]
+                oPlayer_info[j] =1
             end
         end
-        players_teams = vcat(players_teams, player_info')
+        oPlayers_teams = vcat(oPlayers_teams, oPlayer_info')
     end
 
 
@@ -324,13 +324,13 @@ function create_lineups(num_lineups, num_overlap, path_oPlayers, path_qbs, path_
     defenses_opponents=[]
     for num = 1:size(teams)[1]
         if opponents[1] == teams[num]
-            defenses_opponents = players_teams[:, num]
+            defenses_opponents = oPlayers_teams[:, num]
         end
     end
     for num = 2:size(opponents)[1]
         for num_2 = 1:size(teams)[1]
             if opponents[num] == teams[num_2]
-                defenses_opponents = hcat(defenses_opponents, players_teams[:,num_2])
+                defenses_opponents = hcat(defenses_opponents, oPlayers_teams[:,num_2])
             end
         end
     end
@@ -339,19 +339,19 @@ function create_lineups(num_lineups, num_overlap, path_oPlayers, path_qbs, path_
 
 
     # Create line indicators so you know which players are on which lines
-    L1_info = zeros(Int, num_players)
-    L2_info = zeros(Int, num_players)
-    L3_info = zeros(Int, num_players)
-    L4_info = zeros(Int, num_players)
+    L1_info = zeros(Int, num_oPlayers)
+    L2_info = zeros(Int, num_oPlayers)
+    L3_info = zeros(Int, num_oPlayers)
+    L4_info = zeros(Int, num_oPlayers)
     for num=1:size(players)[1]
-        if players[:Team][num] == teams[1]
-            if players[:Line][num] == "1"
+        if oPlayers[:Team][num] == teams[1]
+            if oPlayers[:Line][num] == "1"
                 L1_info[num] = 1
-            elseif players[:Line][num] == "2"
+            elseif oPlayers[:Line][num] == "2"
                 L2_info[num] = 1
-            elseif players[:Line][num] == "3"
+            elseif oPlayers[:Line][num] == "3"
                 L3_info[num] = 1
-            elseif players[:Line][num] == "4"
+            elseif oPlayers[:Line][num] == "4"
                 L4_info[num] = 1
             end
         end
@@ -360,19 +360,19 @@ function create_lineups(num_lineups, num_overlap, path_oPlayers, path_qbs, path_
 
 
     for num2 = 2:size(teams)[1]
-        L1_info = zeros(Int, num_players)
-        L2_info = zeros(Int, num_players)
-        L3_info = zeros(Int, num_players)
-        L4_info = zeros(Int, num_players)
+        L1_info = zeros(Int, num_oPlayers)
+        L2_info = zeros(Int, num_oPlayers)
+        L3_info = zeros(Int, num_oPlayers)
+        L4_info = zeros(Int, num_oPlayers)
         for num=1:size(players)[1]
-            if players[:Team][num] == teams[num2]
-                if players[:Line][num] == "1"
+            if oPlayers[:Team][num] == teams[num2]
+                if oPlayers[:Line][num] == "1"
                     L1_info[num] = 1
-                elseif players[:Line][num] == "2"
+                elseif oPlayers[:Line][num] == "2"
                     L2_info[num] = 1
-                elseif players[:Line][num] == "3"
+                elseif oPlayers[:Line][num] == "3"
                     L3_info[num] = 1
-                elseif players[:Line][num] == "4"
+                elseif oPlayers[:Line][num] == "4"
                     L4_info[num] = 1
                 end
             end
@@ -410,12 +410,12 @@ function create_lineups(num_lineups, num_overlap, path_oPlayers, path_qbs, path_
 
 
     # Lineups using formulation as the stacking type
-    the_lineup= formulation(players, defenses, hcat(zeros(Int, num_players + num_defenses), zeros(Int, num_players + num_defenses)), num_overlap, num_players, num_defenses, qbs, rbs, wrs, tes, num_teams, players_teams, defenses_opponents, team_lines, num_lines, P1_info)
-    the_lineup2 = formulation(skaters, goalies, hcat(the_lineup, zeros(Int, num_players + num_defenses)), num_overlap, num_players, num_defenses, qbs, rbs, wrs, tes, num_teams, players_teams, defenses_opponents, team_lines, num_lines, P1_info)
+    the_lineup= formulation(oPlayers, defenses, hcat(zeros(Int, num_oPlayers + num_defenses), zeros(Int, num_oPlayers + num_defenses)), num_overlap, num_oPlayers, num_defenses, qbs, rbs, wrs, tes, num_teams, oPlayers_teams, defenses_opponents, team_lines, num_lines, P1_info)
+    the_lineup2 = formulation(skaters, goalies, hcat(the_lineup, zeros(Int, num_oPlayers + num_defenses)), num_overlap, num_oPlayers, num_defenses, qbs, rbs, wrs, tes, num_teams, oPlayers_teams, defenses_opponents, team_lines, num_lines, P1_info)
     tracer = hcat(the_lineup, the_lineup2)
     for i=1:(num_lineups-2)
         try
-            thelineup=formulation(players, defenses, tracer, num_overlap, num_players, num_defenses, qbs, rbs, wrs, tes, num_teams, players_teams, defenses_opponents, team_lines, num_lines, P1_info)
+            thelineup=formulation(oPayers, defenses, tracer, num_overlap, num_oPlayers, num_defenses, qbs, rbs, wrs, tes, num_teams, oPlayers_teams, defenses_opponents, team_lines, num_lines, P1_info)
             tracer = hcat(tracer,thelineup)
         catch
             break
@@ -427,40 +427,44 @@ function create_lineups(num_lineups, num_overlap, path_oPlayers, path_qbs, path_
     lineup2 = ""
     for j = 1:size(tracer)[2]
         lineup = ["" "" "" "" "" "" "" "" ""]
-        for i =1:num_skaters
+        for i =1:num_oPlayers
             if tracer[i,j] == 1
-                if centers[i]==1
+                if qbs[i]==1
                     if lineup[1]==""
-                        lineup[1] = string(skaters[i,1], " ", skaters[i,2])
-                    elseif lineup[2]==""
-                        lineup[2] = string(skaters[i,1], " ", skaters[i,2])
-                    elseif lineup[9] ==""
-                        lineup[9] = string(skaters[i,1], " ", skaters[i,2])
+                        lineup[1] = string(oPlayers[i,1], " ", oPlayers[i,2])
+                elseif lineup[9] ==""
+                        lineup[9] = string(oPlayers[i,1], " ", oPlayers[i,2])
                     end
-                elseif wingers[i] == 1
-                    if lineup[3] == ""
-                        lineup[3] = string(skaters[i,1], " ", skaters[i,2])
-                    elseif lineup[4] == ""
-                        lineup[4] = string(skaters[i,1], " ", skaters[i,2])
+                elseif rbs[i]==1
+                      if lineup[2]==""
+                       lineup[2] = string(oPlayers[i,1], " ", oPlayers[i,2])
+                    elseif lineup[3]
+                        lineup[3] = string(oPlayers[i,1], " ", oPlayers[i,2])
+                    elseif lineup[9] == ""
+                         lineup[9] = string(oPlayers[i,1], " ",oPlayers[i,2])
+                              
+                elseif wrs[i] == 1
+                    if lineup[4] == ""
+                        lineup[4] = string(oPlayers[i,1], " ", oPlayers[i,2])
                     elseif lineup[5] == ""
-                        lineup[5] = string(skaters[i,1], " ", skaters[i,2])
+                        lineup[5] = string(oPlayers[i,1], " ", oPlayers[i,2])
+                    elseif lineup[6] == ""
+                        lineup[6] = string(oPlayers[i,1], " ", oPlayers[i,2])
                     elseif lineup[9] == ""
-                        lineup[9] = string(skaters[i,1], " ", skaters[i,2])
+                        lineup[9] = string(oPlayers[i,1], " ", oPlayers[i,2])
                     end
-                elseif defenders[i]==1
-                    if lineup[6] == ""
-                        lineup[6] = string(skaters[i,1], " ", skaters[i,2])
-                    elseif lineup[7] ==""
-                        lineup[7] = string(skaters[i,1], " ", skaters[i,2])
-                    elseif lineup[9] == ""
-                        lineup[9] = string(skaters[i,1], " ", skaters[i,2])
-                    end
-                end
-            end
-        end
-        for i =1:num_goalies
-            if tracer[num_skaters+i,j] == 1
-                lineup[8] = string(goalies[i,1], " ", goalies[i,2])
+               elseif tes[i] == 1
+                    if lineup[7] == ""
+                         lineup[7] == string(oPlayers[i,1]," ", oPlayers[i,2])
+                  elseif lineup[9] == ""
+                          lineup[9] = string(oPlayers[i,1], "", oPlayers[i,2])
+                                    end
+                                end
+                            end
+                        end
+                        for i =1:num_defenses
+                         if tracer[num_skaters+i,j] == 1
+                lineup[8] = string(defenses[i,1], " ", defenses[i,2])
             end
         end
         for name in lineup
