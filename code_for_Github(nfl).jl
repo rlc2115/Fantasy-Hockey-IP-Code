@@ -54,10 +54,10 @@ function one_lineup_no_stacking(players, defenses, lineups, num_overlap, num_pla
     @addConstraint(m, sum{defense_lineup[i], i=1:num_defense} == 1)
 
     # Eight players constraint
-    @addConstraint(m, sum{skaters_lineup[i], i=1:num_skaters} == 8)
+    @addConstraint(m, sum{players_lineup[i], i=1:num_players} == 8)
 
     # one qb
-	@addConstraint(m, sum{qb[i]*players_lineup[i], i=1:num_players == 1})
+    @addConstraint(m, sum{qb[i]*players_lineup[i], i=1:num_players} == 1)
 	
     # between 2 and 3 rbs
     @addConstraint(m, sum{rbs[i]*players_lineup[i], i=1:num_players} <= 3)
