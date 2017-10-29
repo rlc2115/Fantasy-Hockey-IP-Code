@@ -383,33 +383,6 @@ function create_lineups(num_lineups, num_overlap, path_players, path_defense, fo
     num_lines = size(team_lines)[2]
 
 
-
-
-    # Create power play indicators
-    PP_info = zeros(Int, num_players)
-    for num=1:size(players)[1]
-        if players[:Team][num]==teams[1]
-            if players[:Power_Play][num] == "1"
-                PP_info[num] = 1
-            end
-        end
-    end
-
-    P1_info = PP_info
-
-    for num2=2:size(teams)[1]
-        PP_info = zeros(Int, num_players)
-        for num=1:size(players)[1]
-            if [players[:Team][num] == teams[num2]
-                if players[:Power_Play][num] == "1"
-                    PP_info[num]=1
-                end
-            end
-        end
-        P1_info = hcat(P1_info, PP_info)
-    end
-
-
     # Lineups using formulation as the stacking type
     the_lineup= formulation(players, defense, hcat(zeros(Int, num_players + num_defense), zeros(Int, num_players + num_defense)), num_overlap, num_players, num_defense, qb, rbs, wrs, tes, num_teams, players_teams, defense_opponents, team_lines, num_lines, P1_info)
     the_lineup2 = formulation(players, defense hcat(the_lineup, zeros(Int, num_players + num_defense)), num_overlap, num_players, num_defense, qb, rbs, wrs, tes, num_teams, players_teams, defense_opponents, team_lines, num_lines, P1_info)
