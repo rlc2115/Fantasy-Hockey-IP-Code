@@ -57,7 +57,7 @@ function one_lineup_no_stacking(players, qbs, dst, lineups, num_overlap, num_pla
 
     
     # One DST constraint
-    @addConstraint(m, sum{dst_lineup[i], i=1:num_qbs} == 1)
+    @addConstraint(m, sum{dst_lineup[i], i=1:num_dst} == 1)
 	
 	# One qbs constraint
     @addConstraint(m, sum{qbs_lineup[i], i=1:num_qbs} == 1)
