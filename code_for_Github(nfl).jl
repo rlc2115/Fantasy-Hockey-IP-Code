@@ -385,7 +385,7 @@ function create_lineups(num_lineups, num_overlap, path_players, path_defense, fo
 
     # Lineups using formulation as the stacking type
     the_lineup= formulation(players, defense, hcat(zeros(Int, num_players + num_defense), zeros(Int, num_players + num_defense)), num_overlap, num_players, num_defense, qb, rbs, wrs, tes, num_teams, players_teams, defense_opponents, team_lines, num_lines, P1_info)
-    the_lineup2 = formulation(players, defense hcat(the_lineup, zeros(Int, num_players + num_defense)), num_overlap, num_players, num_defense, qb, rbs, wrs, tes, num_teams, players_teams, defense_opponents, team_lines, num_lines, P1_info)
+    the_lineup2 = formulation(players, defense, hcat(the_lineup, zeros(Int, num_players + num_defense)), num_overlap, num_players, num_defense, qb, rbs, wrs, tes, num_teams, players_teams, defense_opponents, team_lines, num_lines, P1_info)
     tracer = hcat(the_lineup, the_lineup2)
     for i=1:(num_lineups-2)
         try
