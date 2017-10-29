@@ -253,11 +253,11 @@ function create_lineups(num_lineups, num_overlap, path_players, path_defense, fo
     # rbs stores the information on which players are rbs
     rbs = Array(Int64, 0)
 
-	# wrs stores the information on which players are wrs
-	wrs = Array(Int64, 0)
+    # wrs stores the information on which players are wrs
+    wrs = Array(Int64, 0)
 	
     # tes stores the information on which players are tes
-    defenders = Array(Int64, 0)
+    tes = Array(Int64, 0)
 
     #=
     Process the position information in the players file to populate the qbs,
