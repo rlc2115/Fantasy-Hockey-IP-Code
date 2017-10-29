@@ -270,7 +270,7 @@ function create_lineups(num_lineups, num_overlap, path_players, path_defense, fo
             wrs=vcat(wrs,fill(0,1))
 	    tes=vcat(tes,fill(0,1))		
         elseif players[i,:Position] == "rbs"
-            qbs=vcat(qbs,fill(0,1))
+            qb=vcat(qb,fill(0,1))
             rbs=vcat(rbs,fill(1,1))
             wrs=vcat(wrs,fill(0,1))
 	    tes=vcat(tes,fill(0,1))
@@ -280,15 +280,10 @@ function create_lineups(num_lineups, num_overlap, path_players, path_defense, fo
             wrs=vcat(wrs,fill(1,1))
             tes=vcat(tes,fill(0,1))
         elseif players[i,:Position] == "tes"
-	    qbs=vcat(qbs,fill(0,1))
+	    qb=vcat(qb,fill(0,1))
 	    rbs=vcat(rbs,fill(0,1))
             wrs=vcat(wrs,fill(0,1))
-	    tes=vcat(tes,fill(1,1))
-		else
-            qb=vcat(qb,fill(0,1))
-            rbs=vcat(rbs,fill(0,1))
-            wrs=vcat(wrs,fill(0,1))
-	    tes=vcat(tes,fill(1,1))		
+	    tes=vcat(tes,fill(1,1))	
         end
     end
 	
