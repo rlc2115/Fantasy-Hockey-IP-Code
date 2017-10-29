@@ -284,6 +284,11 @@ function create_lineups(num_lineups, num_overlap, path_players, path_defense, fo
 	    rbs=vcat(rbs,fill(0,1))
             wrs=vcat(wrs,fill(0,1))
 	    tes=vcat(tes,fill(1,1))	
+	else
+            qb=vcat(qb,fill(0,1))
+            rbs=vcat(rbs,fill(0,1))
+            wrs=vcat(wrs,fill(0,1))
+	    tes=vcat(tes,fill(1,1))	
         end
     end
 	
