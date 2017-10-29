@@ -291,10 +291,7 @@ function create_lineups(num_lineups, num_overlap, path_players, path_defense, fo
 	    tes=vcat(tes,fill(1,1))		
         end
     end
-		end
-	end
 	
-
 
     # Create team indicators from the information in the players file
     teams = unique(players[:Team])
