@@ -57,7 +57,7 @@ function one_lineup_no_stacking(players, qbs, dst, lineups, num_overlap, num_pla
 
     
     # One DST constraint
-    @addConstraint(m, sum{dst_lineup[i], i=1:num_qbs == 1)
+    @addConstraint(m, sum{dst_lineup[i], i=1:num_dst} == 1)
 	
 	# One qbs constraint
     @addConstraint(m, sum{qbs_lineup[i], i=1:num_qbs} == 1)
@@ -149,7 +149,7 @@ function one_lineup_Type_1(players, qbs, dst, lineups, num_overlap, num_players,
     @addConstraint(m, sum{qbs_lineup[i], i=1:num_qbs} == 1)
 	
 	# One DST constraint
-    @addConstraint(m, sum{dst_lineup[i], i=1:num_qbs == 1)
+    @addConstraint(m, sum{dst_lineup[i], i=1:num_dst} == 1)
 
     # Seven players constraint
     @addConstraint(m, sum{players_lineup[i], i=1:num_players} == 7)
@@ -248,7 +248,7 @@ function one_lineup_Type_2(players, qbs, dst, lineups, num_overlap, num_players,
 
     
     # One DST constraint
-    @addConstraint(m, sum{dst_lineup[i], i=1:num_qbs == 1)
+    @addConstraint(m, sum{dst_lineup[i], i=1:num_dst} == 1)
 
     # One quarterback constraint
     @addConstraint(m, sum{qbs_lineup[i], i=1:num_qbs} == 1)
@@ -348,7 +348,7 @@ function one_lineup_Type_3(players, qbs, dst, lineups, num_overlap, num_players,
 
     
     # One DST constraint
-    @addConstraint(m, sum{dst_lineup[i], i=1:num_qbs == 1)
+    @addConstraint(m, sum{dst_lineup[i], i=1:num_dst} == 1)
 
     # One quarterback constraint
     @addConstraint(m, sum{qbs_lineup[i], i=1:num_qbs} == 1)
@@ -456,7 +456,7 @@ function one_lineup_Type_4(players, qbs, dst, lineups, num_overlap, num_players,
 
     
     # One DST constraint
-    @addConstraint(m, sum{dst_lineup[i], i=1:num_qbs == 1)
+    @addConstraint(m, sum{dst_lineup[i], i=1:num_dst} == 1)
 
     # One quarterback constraint
     @addConstraint(m, sum{qbs_lineup[i], i=1:num_qbs} == 1)
@@ -560,7 +560,7 @@ function one_lineup_Type_5(players, qbs, dst, lineups, num_overlap, num_players,
 
     
     # One DST constraint
-    @addConstraint(m, sum{dst_lineup[i], i=1:num_qbs == 1)
+    @addConstraint(m, sum{dst_lineup[i], i=1:num_dst} == 1)
 
     # One quarterback constraint
     @addConstraint(m, sum{qbs_lineup[i], i=1:num_qbs} == 1)
