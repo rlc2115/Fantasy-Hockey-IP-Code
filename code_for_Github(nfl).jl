@@ -339,27 +339,30 @@ function create_lineups(num_lineups, num_overlap, path_players, path_dst, formul
         lineup = ["" "" "" "" "" "" "" "" ""]
         for i =1:num_players
             if tracer[i,j] == 1
-                if rbs[i]==1
+		  if qbs==1
                     if lineup[1]==""
                         lineup[1] = string(players[i,1], " ", players[i,2])
-                    elseif lineup[2]==""
-                        lineup[2] = string(players[i,1], " ", players[i,2])
+                    elseif lineup[9] ==""
+                        lineup[9] = string(players[i,1], " ", players[i,2])		
+                if rbs[i]==1
+                    if lineup[2]=""
+                        lineup[2 = string(players[i,1], " ", players[i,2])
+                    elseif lineup[3==""
+                        lineup[3]= string(players[i,1], " ", players[i,2])
                     elseif lineup[9] ==""
                         lineup[9] = string(players[i,1], " ", players[i,2])
                     end
                 elseif wrs[i] == 1
-                    if lineup[3] == ""
-                        lineup[3] = string(players[i,1], " ", players[i,2])
-                    elseif lineup[4] == ""
+                    if lineup[4] == ""
                         lineup[4] = string(players[i,1], " ", players[i,2])
                     elseif lineup[5] == ""
                         lineup[5] = string(players[i,1], " ", players[i,2])
+                    elseif lineup[6] == ""
+                        lineup[6]= string(players[i,1], " ", players[i,2])
                     elseif lineup[9] == ""
                         lineup[9] = string(players[i,1], " ", players[i,2])
                     end
                 elseif tes[i]==1
-                    if lineup[6] == ""
-                        lineup[6] = string(players[i,1], " ", players[i,2])
                     elseif lineup[7] ==""
                         lineup[7] = string(players[i,1], " ", players[i,2])
                     elseif lineup[9] == ""
