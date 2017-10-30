@@ -346,8 +346,8 @@ function create_lineups(num_lineups, num_overlap, path_players, path_dst, formul
                         lineup[9] = string(players[i,1], " ", players[i,2])		
                 if rbs[i]==1
                     if lineup[2]=""
-                        lineup[2 = string(players[i,1], " ", players[i,2])
-                    elseif lineup[3==""
+                        lineup[2] = string(players[i,1], " ", players[i,2])
+                    elseif lineup[3]==""
                         lineup[3]= string(players[i,1], " ", players[i,2])
                     elseif lineup[9] ==""
                         lineup[9] = string(players[i,1], " ", players[i,2])
