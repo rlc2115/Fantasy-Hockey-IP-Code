@@ -134,17 +134,20 @@ function one_lineup_Type_1(skaters, goalies, lineups, num_overlap, num_skaters, 
 
 
     # between 2 and 3 centers
-    @addConstraint(m, sum{centers[i]*skaters_lineup[i], i=1:num_skaters} == 2)
+    @addConstraint(m, sum{centers[i]*skaters_lineup[i], i=1:num_skaters} <= 3)
+    @addConstraint(m, 2 <= sum{centers[i]*skaters_lineup[i], i=1:num_skaters})
     
 
     # between 3 and 4 wingers
-    @addConstraint(m, sum{wingers[i]*skaters_lineup[i], i=1:num_skaters} <= 5)
-    @addConstraint(m, 4<=sum{wingers[i]*skaters_lineup[i], i=1:num_skaters})
+    @addConstraint(m, sum{wingers[i]*skaters_lineup[i], i=1:num_skaters} <= 4)
+    @addConstraint(m, 3<=sum{wingers[i]*skaters_lineup[i], i=1:num_skaters})
 
     # between 2 and 3 defenders
-    @addConstraint(m, 2 <= sum{defenders[i]*skaters_lineup[i], i=1:num_skaters})
-    @addConstraint(m, sum{defenders[i]*skaters_lineup[i], i=1:num_skaters} <= 3)
-
+    @addConstraint(m, 1 <= sum{defenders[i]*skaters_lineup[i], i=1:num_skaters})
+    @addConstraint(m, sum{defenders[i]*skaters_lineup[i], i=1:num_skaters} <= 2)
+    
+    #1 qb
+@addConstraint (m, sum{qb[i]*skaters_lineup[i], i=1:num_skaters} == 1)
 
     # Financial Constraint
     @addConstraint(m, sum{skaters[i,:Salary]*skaters_lineup[i], i=1:num_skaters} + sum{goalies[i,:Salary]*goalies_lineup[i], i=1:num_goalies} <= 50100)
@@ -643,25 +646,35 @@ function create_lineups(num_lineups, num_overlap, path_skaters, path_goalies, fo
 
     # defenders stores the information on which players are defenders
     defenders = Array(Int64, 0)
-
+    # qb 
+    qb = Array(Int64, 0)
     #=
     Process the position information in the skaters file to populate the wingers,
     centers, and defenders with the corresponding correct information
     =#
     for i =1:num_skaters
+        if skaters[i,:Position] == "qb" 
+            qb=vcat(qb,fill(1,1))
+            wingers=vcat(wingers,fill(0,1))
+            centers=vcat(centers,fill(0,1))
+            defenders=vcat(defenders,fill(0,1))
         if skaters[i,:Position] == "LW" || skaters[i,:Position] == "RW" || skaters[i,:Position] == "W"
+                qb=vcat(qb,fill(0,1))
             wingers=vcat(wingers,fill(1,1))
             centers=vcat(centers,fill(0,1))
             defenders=vcat(defenders,fill(0,1))
         elseif skaters[i,:Position] == "C"
+                qb=vcat(qb,fill(0,1))
             wingers=vcat(wingers,fill(0,1))
             centers=vcat(centers,fill(1,1))
             defenders=vcat(defenders,fill(0,1))
         elseif skaters[i,:Position] == "D" || skaters[i,:Position] == "LD" || skaters[i,:Position] == "RD"
+                qb=vcat(qb,fill(0,1))
             wingers=vcat(wingers,fill(0,1))
             centers=vcat(centers,fill(0,1))
             defenders=vcat(defenders,fill(1,1))
         else
+                qb=vcat(qb,fill(0,1))
             wingers=vcat(wingers,fill(0,1))
             centers=vcat(centers,fill(0,1))
             defenders=vcat(defenders,fill(1,1))
@@ -801,7 +814,7 @@ function create_lineups(num_lineups, num_overlap, path_skaters, path_goalies, fo
     tracer = hcat(the_lineup, the_lineup2)
     for i=1:(num_lineups-2)
         try
-            thelineup=formulation(skaters, goalies, tracer, num_overlap, num_skaters, num_goalies, centers, wingers, defenders, num_teams, skaters_teams, goalie_opponents, team_lines, num_lines, P1_info)
+            thelineup=formulation(skaters, goalies, tracer, num_overlap, num_skaters, num_goalies, qb, centers, wingers, defenders, num_teams, skaters_teams, goalie_opponents, team_lines, num_lines, P1_info)
             tracer = hcat(tracer,thelineup)
         catch
             break
@@ -815,29 +828,34 @@ function create_lineups(num_lineups, num_overlap, path_skaters, path_goalies, fo
         lineup = ["" "" "" "" "" "" "" "" ""]
         for i =1:num_skaters
             if tracer[i,j] == 1
-                if centers[i]==1
+                    if qb[i]==1
                     if lineup[1]==""
                         lineup[1] = string(skaters[i,1], " ", skaters[i,2])
-                    elseif lineup[2]==""
+                    elseif lineup[9] ==""
+                        lineup[9] = string(skaters[i,1], " ", skaters[i,2])
+                if centers[i]==1
+                    if lineup[2]==""
                         lineup[2] = string(skaters[i,1], " ", skaters[i,2])
+                    elseif lineup[3]==""
+                        lineup[3] = string(skaters[i,1], " ", skaters[i,2])
                     elseif lineup[9] ==""
                         lineup[9] = string(skaters[i,1], " ", skaters[i,2])
                     end
                 elseif wingers[i] == 1
-                    if lineup[3] == ""
-                        lineup[3] = string(skaters[i,1], " ", skaters[i,2])
-                    elseif lineup[4] == ""
+                    if lineup[4] == ""
                         lineup[4] = string(skaters[i,1], " ", skaters[i,2])
                     elseif lineup[5] == ""
                         lineup[5] = string(skaters[i,1], " ", skaters[i,2])
+                    elseif lineup[6] == ""
+                        lineup[6] = string(skaters[i,1], " ", skaters[i,2])
                     elseif lineup[9] == ""
                         lineup[9] = string(skaters[i,1], " ", skaters[i,2])
                     end
                 elseif defenders[i]==1
-                    if lineup[6] == ""
-                        lineup[6] = string(skaters[i,1], " ", skaters[i,2])
-                    elseif lineup[7] ==""
+                    if lineup[7] == ""
                         lineup[7] = string(skaters[i,1], " ", skaters[i,2])
+                    elseif lineup[8] ==""
+                        lineup[8] = string(skaters[i,1], " ", skaters[i,2])
                     elseif lineup[9] == ""
                         lineup[9] = string(skaters[i,1], " ", skaters[i,2])
                     end
