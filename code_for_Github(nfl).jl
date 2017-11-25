@@ -74,7 +74,7 @@ function one_lineup_Type_1(skaters, goalies, lineups, num_overlap, num_skaters, 
     @addConstraint(m, sum{defenders[i]*skaters_lineup[i], i=1:num_skaters} <= 2)
     
     #1 qb
-@addConstraint (m, sum{qb[i]*skaters_lineup[i], i=1:num_skaters} == 1)
+    @addConstraint (m, 1 == sum{qb[i]*skaters_lineup[i], i=1:num_skaters})
 
     # Financial Constraint
     @addConstraint(m, sum{skaters[i,:Salary]*skaters_lineup[i], i=1:num_skaters} + sum{goalies[i,:Salary]*goalies_lineup[i], i=1:num_goalies} <= 50000)
