@@ -145,7 +145,7 @@ formulation is the type of formulation that you would like to use. Feel free to 
 the Type 4 formulation in great detail, but we have included the code for all of the formulations dicussed in the paper here. For instance,
 if you would like to create lineups without stacking, change one_lineup_Type_4 below to one_lineup_no_stacking
 =#
-formulation = one_lineup_Type_4
+formulation = one_lineup_Type_1
 
 
 
