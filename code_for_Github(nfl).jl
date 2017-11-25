@@ -225,9 +225,7 @@ function create_lineups(num_lineups, num_overlap, path_skaters, path_goalies, fo
    
 
 
-    # A forward is either a center or a winger
-    forwards = centers+wingers
-
+  
 
 
     # Create team indicators from the information in the skaters file
