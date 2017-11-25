@@ -374,7 +374,8 @@ function create_lineups(num_lineups, num_overlap, path_skaters, path_goalies, fo
                         lineup[1] = string(skaters[i,1], " ", skaters[i,2])
                     elseif lineup[9] ==""
                         lineup[9] = string(skaters[i,1], " ", skaters[i,2])
-                if centers[i]==1
+                end
+                    elseif centers[i]==1
                     if lineup[2]==""
                         lineup[2] = string(skaters[i,1], " ", skaters[i,2])
                     elseif lineup[3]==""
