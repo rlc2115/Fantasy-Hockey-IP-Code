@@ -199,26 +199,28 @@ function create_lineups(num_lineups, num_overlap, path_skaters, path_goalies, fo
             wingers=vcat(wingers,fill(0,1))
             centers=vcat(centers,fill(0,1))
             defenders=vcat(defenders,fill(0,1))
-            elseif skaters[i,:Position] == "LW" || skaters[i,:Position] == "RW" || skaters[i,:Position] == "W"
-                qb=vcat(qb,fill(0,1))
+        elseif skaters[i,:Position] == "LW" || skaters[i,:Position] == "RW" || skaters[i,:Position] == "W"
+            qb=vcat(qb,fill(0,1))
             wingers=vcat(wingers,fill(1,1))
             centers=vcat(centers,fill(0,1))
             defenders=vcat(defenders,fill(0,1))
         elseif skaters[i,:Position] == "C"
-                qb=vcat(qb,fill(0,1))
+            qb=vcat(qb,fill(0,1))
             wingers=vcat(wingers,fill(0,1))
             centers=vcat(centers,fill(1,1))
             defenders=vcat(defenders,fill(0,1))
         elseif skaters[i,:Position] == "D" || skaters[i,:Position] == "LD" || skaters[i,:Position] == "RD"
-                qb=vcat(qb,fill(0,1))
+            qb=vcat(qb,fill(0,1))
             wingers=vcat(wingers,fill(0,1))
             centers=vcat(centers,fill(0,1))
             defenders=vcat(defenders,fill(1,1))
         else
-                qb=vcat(qb,fill(0,1))
+            qb=vcat(qb,fill(0,1))
             wingers=vcat(wingers,fill(0,1))
             centers=vcat(centers,fill(0,1))
             defenders=vcat(defenders,fill(1,1))
+        end
+    end
         end
     end
 
