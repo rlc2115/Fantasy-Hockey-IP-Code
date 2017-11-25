@@ -191,7 +191,7 @@ function create_lineups(num_lineups, num_overlap, path_skaters, path_goalies, fo
     
     #=
     Process the position information in the skaters file to populate the wingers,
-    centers, and defenders with the corresponding correct information
+    centers, defenders, and qb with the corresponding correct information
     =#
     for i =1:num_skaters
         if skaters[i,:Position] == "qb" 
@@ -199,7 +199,7 @@ function create_lineups(num_lineups, num_overlap, path_skaters, path_goalies, fo
             wingers=vcat(wingers,fill(0,1))
             centers=vcat(centers,fill(0,1))
             defenders=vcat(defenders,fill(0,1))
-        if skaters[i,:Position] == "LW" || skaters[i,:Position] == "RW" || skaters[i,:Position] == "W"
+            elseif skaters[i,:Position] == "LW" || skaters[i,:Position] == "RW" || skaters[i,:Position] == "W"
                 qb=vcat(qb,fill(0,1))
             wingers=vcat(wingers,fill(1,1))
             centers=vcat(centers,fill(0,1))
@@ -350,8 +350,8 @@ function create_lineups(num_lineups, num_overlap, path_skaters, path_goalies, fo
 
 
     # Lineups using formulation as the stacking type
-    the_lineup= formulation(skaters, goalies, hcat(zeros(Int, num_skaters + num_goalies), zeros(Int, num_skaters + num_goalies)), num_overlap, num_skaters, num_goalies, centers, wingers, defenders, num_teams, skaters_teams, goalie_opponents, team_lines, num_lines, P1_info)
-    the_lineup2 = formulation(skaters, goalies, hcat(the_lineup, zeros(Int, num_skaters + num_goalies)), num_overlap, num_skaters, num_goalies, centers, wingers, defenders, num_teams, skaters_teams, goalie_opponents, team_lines, num_lines, P1_info)
+    the_lineup= formulation(skaters, goalies, hcat(zeros(Int, num_skaters + num_goalies), zeros(Int, num_skaters + num_goalies)), num_overlap, num_skaters, num_goalies, qb, centers, wingers, defenders, num_teams, skaters_teams, goalie_opponents, team_lines, num_lines, P1_info)
+    the_lineup2 = formulation(skaters, goalies, hcat(the_lineup, zeros(Int, num_skaters + num_goalies)), num_overlap, num_skaters, num_goalies, qb, centers, wingers, defenders, num_teams, skaters_teams, goalie_opponents, team_lines, num_lines, P1_info)
     tracer = hcat(the_lineup, the_lineup2)
     for i=1:(num_lineups-2)
         try
