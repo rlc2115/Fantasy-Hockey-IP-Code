@@ -130,7 +130,7 @@ function one_lineup_Type_1(skaters, goalies, lineups, num_overlap, num_skaters, 
     @addConstraint(m, sum{goalies_lineup[i], i=1:num_goalies} == 1)
 
     # Eight skaters constraint
-    @addConstraint(m, sum{skaters_lineup[i], i=1:num_skaters} == 9)
+    @addConstraint(m, sum{skaters_lineup[i], i=1:num_skaters} == 8)
 
 
     # between 2 and 3 centers
@@ -138,8 +138,8 @@ function one_lineup_Type_1(skaters, goalies, lineups, num_overlap, num_skaters, 
     @addConstraint(m, 2 <= sum{centers[i]*skaters_lineup[i], i=1:num_skaters})
 
     # between 3 and 4 wingers
-    @addConstraint(m, sum{wingers[i]*skaters_lineup[i], i=1:num_skaters} <= 5)
-    @addConstraint(m, 4<=sum{wingers[i]*skaters_lineup[i], i=1:num_skaters})
+    @addConstraint(m, sum{wingers[i]*skaters_lineup[i], i=1:num_skaters} <= 4)
+    @addConstraint(m, 3<=sum{wingers[i]*skaters_lineup[i], i=1:num_skaters})
 
     # between 2 and 3 defenders
     @addConstraint(m, 2 <= sum{defenders[i]*skaters_lineup[i], i=1:num_skaters})
@@ -165,7 +165,8 @@ function one_lineup_Type_1(skaters, goalies, lineups, num_overlap, num_skaters, 
     @addConstraint(m, constr[i=1:num_lines], 2*line_stack[i] <= sum{team_lines[k,i]*skaters_lineup[k], k=1:num_skaters})
     @addConstraint(m, sum{line_stack[i], i=1:num_lines} >= 1)
 
-   
+
+
 
     # Overlap Constraint
     @addConstraint(m, constr[i=1:size(lineups)[2]], sum{lineups[j,i]*skaters_lineup[j], j=1:num_skaters} + sum{lineups[num_skaters+j,i]*goalies_lineup[j], j=1:num_goalies} <= num_overlap)
@@ -819,8 +820,8 @@ function create_lineups(num_lineups, num_overlap, path_skaters, path_goalies, fo
                         lineup[1] = string(skaters[i,1], " ", skaters[i,2])
                     elseif lineup[2]==""
                         lineup[2] = string(skaters[i,1], " ", skaters[i,2])
-                    elseif lineup[10] ==""
-                        lineup[10] = string(skaters[i,1], " ", skaters[i,2])
+                    elseif lineup[9] ==""
+                        lineup[9] = string(skaters[i,1], " ", skaters[i,2])
                     end
                 elseif wingers[i] == 1
                     if lineup[3] == ""
@@ -829,25 +830,23 @@ function create_lineups(num_lineups, num_overlap, path_skaters, path_goalies, fo
                         lineup[4] = string(skaters[i,1], " ", skaters[i,2])
                     elseif lineup[5] == ""
                         lineup[5] = string(skaters[i,1], " ", skaters[i,2])
-                         elseif lineup[6] == ""
-                        lineup[6] = string(skaters[i,1], " ", skaters[i,2])
-                    elseif lineup[10] == ""
-                        lineup[10] = string(skaters[i,1], " ", skaters[i,2])
+                    elseif lineup[9] == ""
+                        lineup[9] = string(skaters[i,1], " ", skaters[i,2])
                     end
                 elseif defenders[i]==1
-                    if lineup[7] == ""
+                    if lineup[6] == ""
+                        lineup[6] = string(skaters[i,1], " ", skaters[i,2])
+                    elseif lineup[7] ==""
                         lineup[7] = string(skaters[i,1], " ", skaters[i,2])
-                    elseif lineup[8] ==""
-                        lineup[8] = string(skaters[i,1], " ", skaters[i,2])
-                    elseif lineup[10] == ""
-                        lineup[10] = string(skaters[i,1], " ", skaters[i,2])
+                    elseif lineup[9] == ""
+                        lineup[9] = string(skaters[i,1], " ", skaters[i,2])
                     end
                 end
             end
         end
         for i =1:num_goalies
             if tracer[num_skaters+i,j] == 1
-                lineup[9] = string(goalies[i,1], " ", goalies[i,2])
+                lineup[8] = string(goalies[i,1], " ", goalies[i,2])
             end
         end
         for name in lineup
