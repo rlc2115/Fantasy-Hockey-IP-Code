@@ -847,7 +847,7 @@ function create_lineups(num_lineups, num_overlap, path_skaters, path_goalies, fo
         end
         for i =1:num_goalies
             if tracer[num_skaters+i,j] == 1
-                lineup[8] = string(goalies[i,1], " ", goalies[i,2])
+                lineup[9] = string(goalies[i,1], " ", goalies[i,2])
             end
         end
         for name in lineup
