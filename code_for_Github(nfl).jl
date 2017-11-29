@@ -653,7 +653,7 @@ function create_lineups(num_lineups, num_overlap, path_skaters, path_goalies, fo
             wingers=vcat(wingers,fill(1,1))
             centers=vcat(centers,fill(0,1))
             defenders=vcat(defenders,fill(0,1))
-        elseif skaters[i,:Position] == "C"
+        elseif skaters[i,:Position] == "C" || skaters[i,:Position] == "CQB"
             wingers=vcat(wingers,fill(0,1))
             centers=vcat(centers,fill(1,1))
             defenders=vcat(defenders,fill(0,1))
