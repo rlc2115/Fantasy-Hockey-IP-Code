@@ -62,7 +62,7 @@ function one_lineup_no_stacking(skaters, goalies, lineups, num_overlap, num_skat
 
     # between 3 and 4 wingers
     @addConstraint(m, sum{wingers[i]*skaters_lineup[i], i=1:num_skaters} <= 4)
-    @addConstraint(m, 3<=sum{wingers[i]*skaters_lineup[i], i=1:num_skaters})
+    @addConstraint(m, 3 <=sum{wingers[i]*skaters_lineup[i], i=1:num_skaters})
 
     # between 2 and 3 defenders
     @addConstraint(m, 2 <= sum{defenders[i]*skaters_lineup[i], i=1:num_skaters})
