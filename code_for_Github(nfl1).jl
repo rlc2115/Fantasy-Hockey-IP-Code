@@ -214,8 +214,10 @@ rbs, wrs, tes with the corresponding correct information
             rbs=vcat(rbs,fill(0,1))
             wrs=vcat(wrs,fill(0,1))
 	    tes=vcat(tes, fill(1,1))
+		end
         end
     end
+end
 
 
 
