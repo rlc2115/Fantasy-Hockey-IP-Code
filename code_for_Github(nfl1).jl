@@ -69,8 +69,8 @@ function one_lineup_Type_1(skaters, goalies, lineups, num_overlap, num_skaters, 
     @addConstraint(m, 3<=sum{wrs[i]*skaters_lineup[i], i=1:num_skaters})
 
     # between 1 and 2 tes
-    @addConstraint(m, 2 <= sum{tes[i]*skaters_lineup[i], i=1:num_skaters})
-    @addConstraint(m, sum{tes[i]*skaters_lineup[i], i=1:num_skaters} <= 3)
+    @addConstraint(m, 1 <= sum{tes[i]*skaters_lineup[i], i=1:num_skaters})
+    @addConstraint(m, sum{tes[i]*skaters_lineup[i], i=1:num_skaters} <= 2)
 
 
     # Financial Constraint
