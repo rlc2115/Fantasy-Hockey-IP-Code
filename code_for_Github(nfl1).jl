@@ -39,9 +39,84 @@ path_to_output= "output.csv"
 
 
 
+# This is a function that creates one lineup using the No Stacking formulation from the paper
+function one_lineup_no_stacking(skaters, goalies, lineups, num_overlap, num_skaters, num_goalies, centers, wingers, defenders, num_teams, skaters_teams, goalie_opponents, team_lines, num_lines, P1_info)
+    m = Model(solver=GLPKSolverMIP())
+
+    # Variable for skaters in lineup.
+    @defVar(m, skaters_lineup[i=1:num_skaters], Bin)
+
+    # Variable for goalie in lineup.
+    @defVar(m, goalies_lineup[i=1:num_goalies], Bin)
+
+
+    # One goalie constraint
+    @addConstraint(m, sum{goalies_lineup[i], i=1:num_goalies} == 1)
+
+    # Eight Skaters constraint
+    @addConstraint(m, sum{skaters_lineup[i], i=1:num_skaters} == 8)
+
+    # between 2 and 3 centers
+    @addConstraint(m, sum{centers[i]*skaters_lineup[i], i=1:num_skaters} <= 3)
+    @addConstraint(m, 2 <= sum{centers[i]*skaters_lineup[i], i=1:num_skaters})
+
+    # between 3 and 4 wingers
+    @addConstraint(m, sum{wingers[i]*skaters_lineup[i], i=1:num_skaters} <= 4)
+    @addConstraint(m, 3<=sum{wingers[i]*skaters_lineup[i], i=1:num_skaters})
+
+    # between 2 and 3 defenders
+    @addConstraint(m, 2 <= sum{defenders[i]*skaters_lineup[i], i=1:num_skaters})
+    @addConstraint(m, sum{defenders[i]*skaters_lineup[i], i=1:num_skaters} <= 3)
+
+    # Financial Constraint
+    @addConstraint(m, sum{skaters[i,:Salary]*skaters_lineup[i], i=1:num_skaters} + sum{goalies[i,:Salary]*goalies_lineup[i], i=1:num_goalies} <= 50000)
+
+    # at least 3 different teams for the 8 skaters constraints
+    @defVar(m, used_team[i=1:num_teams], Bin)
+    @addConstraint(m, constr[i=1:num_teams], used_team[i] <= sum{skaters_teams[t, i]*skaters_lineup[t], t=1:num_skaters})
+    @addConstraint(m, sum{used_team[i], i=1:num_teams} >= 3)
+
+    # Overlap Constraint
+    @addConstraint(m, constr[i=1:size(lineups)[2]], sum{lineups[j,i]*skaters_lineup[j], j=1:num_skaters} + sum{lineups[num_skaters+j,i]*goalies_lineup[j], j=1:num_goalies} <= num_overlap)
+
+
+    # Objective
+    @setObjective(m, Max, sum{skaters[i,:Projection]*skaters_lineup[i], i=1:num_skaters} + sum{goalies[i,:Projection]*goalies_lineup[i], i=1:num_goalies})
+
+
+    # Solve the integer programming problem
+    println("Solving Problem...")
+    @printf("\n")
+    status = solve(m);
+
+
+    # Puts the output of one lineup into a format that will be used later
+    if status==:Optimal
+        skaters_lineup_copy = Array(Int64, 0)
+        for i=1:num_skaters
+            if getValue(skaters_lineup[i]) >= 0.9 && getValue(skaters_lineup[i]) <= 1.1
+                skaters_lineup_copy = vcat(skaters_lineup_copy, fill(1,1))
+            else
+                skaters_lineup_copy = vcat(skaters_lineup_copy, fill(0,1))
+            end
+        end
+        for i=1:num_goalies
+            if getValue(goalies_lineup[i]) >= 0.9 && getValue(goalies_lineup[i]) <= 1.1
+                skaters_lineup_copy = vcat(skaters_lineup_copy, fill(1,1))
+            else
+                skaters_lineup_copy = vcat(skaters_lineup_copy, fill(0,1))
+            end
+        end
+        return(skaters_lineup_copy)
+    end
+end
+
+
+
+
 
 # This is a function that creates one lineup using the Type 1 formulation from the paper
-function one_lineup_Type_1(skaters, goalies, lineups, num_overlap, num_skaters, num_goalies, qb, rb, wr, te, num_teams, skaters_teams, goalie_opponents, team_lines, num_lines, P1_info)
+function one_lineup_Type_1(skaters, goalies, lineups, num_overlap, num_skaters, num_goalies, centers, wingers, defenders, num_teams, skaters_teams, goalie_opponents, team_lines, num_lines, P1_info)
     m = Model(solver=GLPKSolverMIP())
 
     # Variable for skaters in lineup
@@ -57,20 +132,18 @@ function one_lineup_Type_1(skaters, goalies, lineups, num_overlap, num_skaters, 
     # Eight skaters constraint
     @addConstraint(m, sum{skaters_lineup[i], i=1:num_skaters} == 8)
 
-    # one qb
-    @addConstraint(m, sum{qb[i]*skaters_lineup[i], i=1:num_skaters} == 1)
-	
-    # between 2 and 3 rbs
-    @addConstraint(m, sum{rbs[i]*skaters_lineup[i], i=1:num_skaters} <= 3)
-    @addConstraint(m, 2 <= sum{rbs[i]*skaters_lineup[i], i=1:num_skaters})
 
-    # between 3 and 4 wrs
-    @addConstraint(m, sum{wrs[i]*skaters_lineup[i], i=1:num_skaters} <= 4)
-    @addConstraint(m, 3<=sum{wrs[i]*skaters_lineup[i], i=1:num_skaters})
+    # between 2 and 3 centers
+    @addConstraint(m, sum{centers[i]*skaters_lineup[i], i=1:num_skaters} <= 3)
+    @addConstraint(m, 2 <= sum{centers[i]*skaters_lineup[i], i=1:num_skaters})
 
-    # between 1 and 2 tes
-    @addConstraint(m, 1 <= sum{tes[i]*skaters_lineup[i], i=1:num_skaters})
-    @addConstraint(m, sum{tes[i]*skaters_lineup[i], i=1:num_skaters} <= 2)
+    # between 3 and 4 wingers
+    @addConstraint(m, sum{wingers[i]*skaters_lineup[i], i=1:num_skaters} <= 4)
+    @addConstraint(m, 3<=sum{wingers[i]*skaters_lineup[i], i=1:num_skaters})
+
+    # between 2 and 3 defenders
+    @addConstraint(m, 2 <= sum{defenders[i]*skaters_lineup[i], i=1:num_skaters})
+    @addConstraint(m, sum{defenders[i]*skaters_lineup[i], i=1:num_skaters} <= 3)
 
 
     # Financial Constraint
@@ -80,7 +153,7 @@ function one_lineup_Type_1(skaters, goalies, lineups, num_overlap, num_skaters, 
     # At least 3 different teams for the 8 skaters constraint
     @defVar(m, used_team[i=1:num_teams], Bin)
     @addConstraint(m, constr[i=1:num_teams], used_team[i] <= sum{skaters_teams[t, i]*skaters_lineup[t], t=1:num_skaters})
-    @addConstraint(m, sum{used_team[i], i=1:num_teams} >= 3)
+    @addConstraint(m, sum{used_team[i], i=1:num_teams} >= 2)
 
 
     # No goalies going against skaters constraint
@@ -133,6 +206,92 @@ end
 
 
 
+# This is a function that creates one lineup using the Type 2 formulation from the paper
+function one_lineup_Type_2(skaters, goalies, lineups, num_overlap, num_skaters, num_goalies, centers, wingers, defenders, num_teams, skaters_teams, goalie_opponents, team_lines, num_lines, P1_info)
+    m = Model(solver=GLPKSolverMIP())
+
+    # Variable for skaters in lineup
+    @defVar(m, skaters_lineup[i=1:num_skaters], Bin)
+
+    # Variable for goalie in lineup
+    @defVar(m, goalies_lineup[i=1:num_goalies], Bin)
+
+
+    # One goalie constraint
+    @addConstraint(m, sum{goalies_lineup[i], i=1:num_goalies} == 1)
+
+    # Eight skaters constraint
+    @addConstraint(m, sum{skaters_lineup[i], i=1:num_skaters} == 8)
+
+
+    # between 2 and 3 centers
+    @addConstraint(m, sum{centers[i]*skaters_lineup[i], i=1:num_skaters} <= 3)
+    @addConstraint(m, 2 <= sum{centers[i]*skaters_lineup[i], i=1:num_skaters})
+
+    # between 3 and 4 wingers
+    @addConstraint(m, sum{wingers[i]*skaters_lineup[i], i=1:num_skaters} <= 4)
+    @addConstraint(m, 3<=sum{wingers[i]*skaters_lineup[i], i=1:num_skaters})
+
+    # exactly 2 defenders
+    @addConstraint(m, 2 == sum{defenders[i]*skaters_lineup[i], i=1:num_skaters})
+
+    # Financial Constraint
+    @addConstraint(m, sum{skaters[i,:Salary]*skaters_lineup[i], i=1:num_skaters} + sum{goalies[i,:Salary]*goalies_lineup[i], i=1:num_goalies} <= 50000)
+
+
+    # at least 3 different teams for the 8 skaters constraint
+    @defVar(m, used_team[i=1:num_teams], Bin)
+    @addConstraint(m, constr[i=1:num_teams], used_team[i] <= sum{skaters_teams[t, i]*skaters_lineup[t], t=1:num_skaters})
+    @addConstraint(m, sum{used_team[i], i=1:num_teams} >= 2)
+
+
+    # No goalies going against skaters constraint
+    @addConstraint(m, constr[i=1:num_goalies], 6*goalies_lineup[i] + sum{goalie_opponents[k, i]*skaters_lineup[k], k=1:num_skaters}<=6)
+
+
+    # Must have at least one complete line in each lineup
+    @defVar(m, line_stack[i=1:num_lines], Bin)
+    @addConstraint(m, constr[i=1:num_lines], 3*line_stack[i] <= sum{team_lines[k,i]*skaters_lineup[k], k=1:num_skaters})
+    @addConstraint(m, sum{line_stack[i], i=1:num_lines} >= 1)
+
+
+    # Overlap Constraint
+    @addConstraint(m, constr[i=1:size(lineups)[2]], sum{lineups[j,i]*skaters_lineup[j], j=1:num_skaters} + sum{lineups[num_skaters+j,i]*goalies_lineup[j], j=1:num_goalies} <= num_overlap)
+
+
+    # Objective
+    @setObjective(m, Max, sum{skaters[i,:Projection]*skaters_lineup[i], i=1:num_skaters} + sum{goalies[i,:Projection]*goalies_lineup[i], i=1:num_goalies} )
+
+
+    # Solve the integer programming problem
+    println("Solving Problem...")
+    @printf("\n")
+    status = solve(m);
+
+
+    # Puts the output of one lineup into a format that will be used later
+    if status==:Optimal
+        skaters_lineup_copy = Array(Int64, 0)
+        for i=1:num_skaters
+            if getValue(skaters_lineup[i]) >= 0.9 && getValue(skaters_lineup[i]) <= 1.1
+                skaters_lineup_copy = vcat(skaters_lineup_copy, fill(1,1))
+            else
+                skaters_lineup_copy = vcat(skaters_lineup_copy, fill(0,1))
+            end
+        end
+        for i=1:num_goalies
+            if getValue(goalies_lineup[i]) >= 0.9 && getValue(goalies_lineup[i]) <= 1.1
+                skaters_lineup_copy = vcat(skaters_lineup_copy, fill(1,1))
+            else
+                skaters_lineup_copy = vcat(skaters_lineup_copy, fill(0,1))
+            end
+        end
+        return(skaters_lineup_copy)
+    end
+end
+
+
+
 
 
 #=
@@ -172,55 +331,42 @@ function create_lineups(num_lineups, num_overlap, path_skaters, path_goalies, fo
     # Number of goalies
     num_goalies = size(goalies)[1]
 
-    # qb stores the information on which players are wings
-    qb = Array(Int64, 0)
+    # wingers stores the information on which players are wings
+    wingers = Array(Int64, 0)
 
-    # rbs stores the information on which players are centers
-    rbs = Array(Int64, 0)
+    # centers stores the information on which players are centers
+    centers = Array(Int64, 0)
 
-    # wrs stores the information on which players are defenders
-    wrs = Array(Int64, 0)
-	
-    # tes stores the information on which players are defenders
-    tes = Array(Int64, 0)
+    # defenders stores the information on which players are defenders
+    defenders = Array(Int64, 0)
 
     #=
-    Process the position information in the skaters file to populate the qb,
-rbs, wrs, tes with the corresponding correct information
+    Process the position information in the skaters file to populate the wingers,
+    centers, and defenders with the corresponding correct information
     =#
     for i =1:num_skaters
-        if skaters[i,:Position] == "qb" 
-            qb=vcat(qb,fill(1,1))
-            rbs=vcat(rbs,fill(0,1))
-            wrs=vcat(wrs,fill(0,1))
-	    tes=vcat(tes, fill(0,1))		
-        elseif skaters[i,:Position] == "rbs"
-            qb=vcat(qb,fill(0,1))
-            rbs=vcat(rbs,fill(1,1))
-            wrs=vcat(wrs,fill(0,1))
-	    tes=vcat(tes, fill(0,1))
-        elseif skaters[i,:Position] == "wrs" 
-            qb=vcat(qb,fill(0,1))
-            rbs=vcat(rbs,fill(0,1))
-            wrs=vcat(wrs,fill(1,1))
-	    tes=vcat(tes, fill(0,1))
-       elseif skaters[i,:Position] == "tes" 
-            qb=vcat(qb,fill(0,1))
-            rbs=vcat(rbs,fill(0,1))
-            wrs=vcat(wrs,fill(0,1))
-	    tes=vcat(tes, fill(1,1))
+        if skaters[i,:Position] == "LW" || skaters[i,:Position] == "RW" || skaters[i,:Position] == "W"
+            wingers=vcat(wingers,fill(1,1))
+            centers=vcat(centers,fill(0,1))
+            defenders=vcat(defenders,fill(0,1))
+        elseif skaters[i,:Position] == "C"
+            wingers=vcat(wingers,fill(0,1))
+            centers=vcat(centers,fill(1,1))
+            defenders=vcat(defenders,fill(0,1))
+        elseif skaters[i,:Position] == "D" || skaters[i,:Position] == "LD" || skaters[i,:Position] == "RD"
+            wingers=vcat(wingers,fill(0,1))
+            centers=vcat(centers,fill(0,1))
+            defenders=vcat(defenders,fill(1,1))
         else
-            qb=vcat(qb,fill(0,1))
-            rbs=vcat(rbs,fill(0,1))
-            wrs=vcat(wrs,fill(0,1))
-	    tes=vcat(tes, fill(1,1))
-		end
+            wingers=vcat(wingers,fill(0,1))
+            centers=vcat(centers,fill(0,1))
+            defenders=vcat(defenders,fill(1,1))
         end
-end
-end
-end
-    
+    end
 
+
+    # A forward is either a center or a winger
+    forwards = centers+wingers
 
 
 
@@ -346,12 +492,12 @@ end
 
 
     # Lineups using formulation as the stacking type
-    the_lineup= formulation(skaters, goalies, hcat(zeros(Int, num_skaters + num_goalies), zeros(Int, num_skaters + num_goalies)), num_overlap, num_skaters, num_goalies, qb, rbs, wrs, tes, num_teams, skaters_teams, goalie_opponents, team_lines, num_lines, P1_info)
-    the_lineup2 = formulation(skaters, goalies, hcat(the_lineup, zeros(Int, num_skaters + num_goalies)), num_overlap, num_skaters, num_goalies, qb, rbs, wrs, tes, num_teams, skaters_teams, goalie_opponents, team_lines, num_lines, P1_info)
+    the_lineup= formulation(skaters, goalies, hcat(zeros(Int, num_skaters + num_goalies), zeros(Int, num_skaters + num_goalies)), num_overlap, num_skaters, num_goalies, centers, wingers, defenders, num_teams, skaters_teams, goalie_opponents, team_lines, num_lines, P1_info)
+    the_lineup2 = formulation(skaters, goalies, hcat(the_lineup, zeros(Int, num_skaters + num_goalies)), num_overlap, num_skaters, num_goalies, centers, wingers, defenders, num_teams, skaters_teams, goalie_opponents, team_lines, num_lines, P1_info)
     tracer = hcat(the_lineup, the_lineup2)
     for i=1:(num_lineups-2)
         try
-            thelineup=formulation(skaters, goalies, tracer, num_overlap, num_skaters, num_goalies, qb, rbs, wrs, tes, num_teams, skaters_teams, goalie_opponents, team_lines, num_lines, P1_info)
+            thelineup=formulation(skaters, goalies, tracer, num_overlap, num_skaters, num_goalies, centers, wingers, defenders, num_teams, skaters_teams, goalie_opponents, team_lines, num_lines, P1_info)
             tracer = hcat(tracer,thelineup)
         catch
             break
@@ -365,29 +511,28 @@ end
         lineup = ["" "" "" "" "" "" "" "" ""]
         for i =1:num_skaters
             if tracer[i,j] == 1
-                if qb[i]==1
+                if centers[i]==1
                     if lineup[1]==""
                         lineup[1] = string(skaters[i,1], " ", skaters[i,2])
-                    end
-                elseif rbs[i] == 1
-                    if lineup[2] == ""
+                    elseif lineup[2]==""
                         lineup[2] = string(skaters[i,1], " ", skaters[i,2])
-                    elseif lineup[3] == ""
+                    elseif lineup[9] ==""
+                        lineup[9] = string(skaters[i,1], " ", skaters[i,2])
+                    end
+                elseif wingers[i] == 1
+                    if lineup[3] == ""
                         lineup[3] = string(skaters[i,1], " ", skaters[i,2])
+                    elseif lineup[4] == ""
+                        lineup[4] = string(skaters[i,1], " ", skaters[i,2])
+                    elseif lineup[5] == ""
+                        lineup[5] = string(skaters[i,1], " ", skaters[i,2])
                     elseif lineup[9] == ""
                         lineup[9] = string(skaters[i,1], " ", skaters[i,2])
                     end
-                elseif wrs[i]==1
-                    if lineup[4] == ""
-                        lineup[4] = string(skaters[i,1], " ", skaters[i,2])
-                    elseif lineup[5] ==""
-                        lineup[5] = string(skaters[i,1], " ", skaters[i,2])
-		  elseif lineup[6] ==""
+                elseif defenders[i]==1
+                    if lineup[6] == ""
                         lineup[6] = string(skaters[i,1], " ", skaters[i,2])
-                    elseif lineup[9] == ""
-                        lineup[9] = string(skaters[i,1], " ", skaters[i,2])
-		elseif tes[i]==1
-                    if lineup[7] == ""
+                    elseif lineup[7] ==""
                         lineup[7] = string(skaters[i,1], " ", skaters[i,2])
                     elseif lineup[9] == ""
                         lineup[9] = string(skaters[i,1], " ", skaters[i,2])
