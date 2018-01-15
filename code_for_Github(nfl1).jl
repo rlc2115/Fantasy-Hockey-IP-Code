@@ -329,10 +329,7 @@ function one_lineup_Type_3(skaters, goalies, lineups, num_overlap, num_skaters, 
     @addConstraint(m, sum{used_team[i], i=1:num_teams} >= 2)
 
 
-    # Must have at least 2 lines with at least two people
-    @defVar(m, line_stack2[i=1:num_lines], Bin)
-    @addConstraint(m, constr[i=1:num_lines], 2*line_stack2[i] <= sum{team_lines[k,i]*skaters_lineup[k], k=1:num_skaters})
-    @addConstraint(m, sum{line_stack2[i], i=1:num_lines} >= 2)
+
 
 
     # Must have at least one complete line in each lineup
