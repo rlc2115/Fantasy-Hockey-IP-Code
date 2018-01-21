@@ -202,10 +202,6 @@ function one_lineup_Type_1(skaters, goalies, lineups, num_overlap, num_skaters, 
     end
 end
 
-
-
-
-
 # This is a function that creates one lineup using the Type 2 formulation from the paper
 function one_lineup_Type_2(skaters, goalies, lineups, num_overlap, num_skaters, num_goalies, centers, wingers, defenders, num_teams, skaters_teams, goalie_opponents, team_lines, num_lines, P1_info)
     m = Model(solver=GLPKSolverMIP())
@@ -232,14 +228,16 @@ function one_lineup_Type_2(skaters, goalies, lineups, num_overlap, num_skaters, 
     @addConstraint(m, sum{wingers[i]*skaters_lineup[i], i=1:num_skaters} <= 4)
     @addConstraint(m, 3<=sum{wingers[i]*skaters_lineup[i], i=1:num_skaters})
 
-    # exactly 2 defenders
-    @addConstraint(m, 2 == sum{defenders[i]*skaters_lineup[i], i=1:num_skaters})
+    # between 2 and 3 defenders
+    @addConstraint(m, 2 <= sum{defenders[i]*skaters_lineup[i], i=1:num_skaters})
+    @addConstraint(m, sum{defenders[i]*skaters_lineup[i], i=1:num_skaters} <= 3)
+
 
     # Financial Constraint
     @addConstraint(m, sum{skaters[i,:Salary]*skaters_lineup[i], i=1:num_skaters} + sum{goalies[i,:Salary]*goalies_lineup[i], i=1:num_goalies} <= 50000)
 
 
-    # at least 3 different teams for the 8 skaters constraint
+    # At least 3 different teams for the 8 skaters constraint
     @defVar(m, used_team[i=1:num_teams], Bin)
     @addConstraint(m, constr[i=1:num_teams], used_team[i] <= sum{skaters_teams[t, i]*skaters_lineup[t], t=1:num_skaters})
     @addConstraint(m, sum{used_team[i], i=1:num_teams} >= 2)
@@ -251,8 +249,9 @@ function one_lineup_Type_2(skaters, goalies, lineups, num_overlap, num_skaters, 
 
     # Must have at least one complete line in each lineup
     @defVar(m, line_stack[i=1:num_lines], Bin)
-    @addConstraint(m, constr[i=1:num_lines], 3*line_stack[i] <= sum{team_lines[k,i]*skaters_lineup[k], k=1:num_skaters})
+    @addConstraint(m, constr[i=1:num_lines], 2*line_stack[i] <= sum{team_lines[k,i]*skaters_lineup[k], k=1:num_skaters})
     @addConstraint(m, sum{line_stack[i], i=1:num_lines} >= 1)
+
 
 
     # Overlap Constraint
@@ -289,7 +288,6 @@ function one_lineup_Type_2(skaters, goalies, lineups, num_overlap, num_skaters, 
         return(skaters_lineup_copy)
     end
 end
-
 # This is a function that creates one lineup using the Type 3 formulation from the paper
 function one_lineup_Type_3(skaters, goalies, lineups, num_overlap, num_skaters, num_goalies, centers, wingers, defenders, num_teams, skaters_teams, goalie_opponents, team_lines, num_lines, P1_info)
     m = Model(solver=GLPKSolverMIP())
@@ -316,26 +314,30 @@ function one_lineup_Type_3(skaters, goalies, lineups, num_overlap, num_skaters, 
     @addConstraint(m, sum{wingers[i]*skaters_lineup[i], i=1:num_skaters} <= 4)
     @addConstraint(m, 3<=sum{wingers[i]*skaters_lineup[i], i=1:num_skaters})
 
-    # exactly 2 defenders
-    @addConstraint(m, 2 == sum{defenders[i]*skaters_lineup[i], i=1:num_skaters})
+    # between 2 and 3 defenders
+    @addConstraint(m, 2 <= sum{defenders[i]*skaters_lineup[i], i=1:num_skaters})
+    @addConstraint(m, sum{defenders[i]*skaters_lineup[i], i=1:num_skaters} <= 3)
+
 
     # Financial Constraint
     @addConstraint(m, sum{skaters[i,:Salary]*skaters_lineup[i], i=1:num_skaters} + sum{goalies[i,:Salary]*goalies_lineup[i], i=1:num_goalies} <= 50000)
 
 
-    # at least 3 different teams for the 8 skaters constraint
+    # At least 3 different teams for the 8 skaters constraint
     @defVar(m, used_team[i=1:num_teams], Bin)
     @addConstraint(m, constr[i=1:num_teams], used_team[i] <= sum{skaters_teams[t, i]*skaters_lineup[t], t=1:num_skaters})
     @addConstraint(m, sum{used_team[i], i=1:num_teams} >= 2)
 
 
-
+    # No goalies going against skaters constraint
+    @addConstraint(m, constr[i=1:num_goalies], 6*goalies_lineup[i] + sum{goalie_opponents[k, i]*skaters_lineup[k], k=1:num_skaters}<=6)
 
 
     # Must have at least one complete line in each lineup
     @defVar(m, line_stack[i=1:num_lines], Bin)
-    @addConstraint(m, constr[i=1:num_lines], 2*line_stack[i] <= sum{team_lines[k,i]*skaters_lineup[k], k=1:num_skaters})
+    @addConstraint(m, constr[i=1:num_lines], 3*line_stack[i] <= sum{team_lines[k,i]*skaters_lineup[k], k=1:num_skaters})
     @addConstraint(m, sum{line_stack[i], i=1:num_lines} >= 1)
+
 
 
     # Overlap Constraint
@@ -372,7 +374,6 @@ function one_lineup_Type_3(skaters, goalies, lineups, num_overlap, num_skaters, 
         return(skaters_lineup_copy)
     end
 end
-
 # This is a function that creates one lineup using the Type 4 formulation from the paper
 function one_lineup_Type_4(skaters, goalies, lineups, num_overlap, num_skaters, num_goalies, centers, wingers, defenders, num_teams, skaters_teams, goalie_opponents, team_lines, num_lines, P1_info)
     m = Model(solver=GLPKSolverMIP())
@@ -414,12 +415,13 @@ function one_lineup_Type_4(skaters, goalies, lineups, num_overlap, num_skaters, 
     @addConstraint(m, sum{used_team[i], i=1:num_teams} >= 2)
 
 
-  
+    # No goalies going against skaters constraint
+    @addConstraint(m, constr[i=1:num_goalies], 6*goalies_lineup[i] + sum{goalie_opponents[k, i]*skaters_lineup[k], k=1:num_skaters}<=6)
 
 
     # Must have at least one complete line in each lineup
     @defVar(m, line_stack[i=1:num_lines], Bin)
-    @addConstraint(m, constr[i=1:num_lines], 3*line_stack[i] <= sum{team_lines[k,i]*skaters_lineup[k], k=1:num_skaters})
+    @addConstraint(m, constr[i=1:num_lines], 4*line_stack[i] <= sum{team_lines[k,i]*skaters_lineup[k], k=1:num_skaters})
     @addConstraint(m, sum{line_stack[i], i=1:num_lines} >= 1)
 
 
@@ -458,6 +460,10 @@ function one_lineup_Type_4(skaters, goalies, lineups, num_overlap, num_skaters, 
         return(skaters_lineup_copy)
     end
 end
+
+
+
+
 
 
 
