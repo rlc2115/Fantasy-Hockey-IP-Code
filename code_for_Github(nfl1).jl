@@ -702,8 +702,8 @@ function one_lineup_Type_8(skaters, goalies, lineups, num_overlap, num_skaters, 
 end
 
 
-# This is a function that creates one lineup using the Type 8 formulation from the paper
-function one_lineup_Type_8(skaters, goalies, lineups, num_overlap, num_skaters, num_goalies, centers, wingers, defenders, num_teams, skaters_teams, goalie_opponents, team_lines, num_lines, P1_info)
+# This is a function that creates one lineup using the Type 9 formulation from the paper
+function one_lineup_Type_9(skaters, goalies, lineups, num_overlap, num_skaters, num_goalies, centers, wingers, defenders, num_teams, skaters_teams, goalie_opponents, team_lines, num_lines, P1_info)
     m = Model(solver=GLPKSolverMIP())
 
     # Variable for skaters in lineup
