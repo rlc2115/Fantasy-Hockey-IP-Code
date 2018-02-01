@@ -307,12 +307,12 @@ function one_lineup_Type_3(skaters, goalies, lineups, num_overlap, num_skaters, 
 
 
     # between 2 and 3 centers
-    @addConstraint(m, sum{centers[i]*skaters_lineup[i], i=1:num_skaters} <= 3)
+    @addConstraint(m, sum{centers[i]*skaters_lineup[i], i=1:num_skaters} <= 2)
     @addConstraint(m, 2 <= sum{centers[i]*skaters_lineup[i], i=1:num_skaters})
 
     # between 3 and 4 wingers
-    @addConstraint(m, sum{wingers[i]*skaters_lineup[i], i=1:num_skaters} <= 4)
-    @addConstraint(m, 3<=sum{wingers[i]*skaters_lineup[i], i=1:num_skaters})
+    @addConstraint(m, sum{wingers[i]*skaters_lineup[i], i=1:num_skaters} <= 5)
+    @addConstraint(m, 4<=sum{wingers[i]*skaters_lineup[i], i=1:num_skaters})
 
     # between 2 and 3 defenders
     @addConstraint(m, 2 <= sum{defenders[i]*skaters_lineup[i], i=1:num_skaters})
@@ -323,14 +323,9 @@ function one_lineup_Type_3(skaters, goalies, lineups, num_overlap, num_skaters, 
     @addConstraint(m, sum{skaters[i,:Salary]*skaters_lineup[i], i=1:num_skaters} + sum{goalies[i,:Salary]*goalies_lineup[i], i=1:num_goalies} <= 50000)
 
 
-    # At least 3 different teams for the 8 skaters constraint
-    @defVar(m, used_team[i=1:num_teams], Bin)
-    @addConstraint(m, constr[i=1:num_teams], used_team[i] <= sum{skaters_teams[t, i]*skaters_lineup[t], t=1:num_skaters})
-    @addConstraint(m, sum{used_team[i], i=1:num_teams} >= 2)
+    
 
-
-    # No goalies going against skaters constraint
-    @addConstraint(m, constr[i=1:num_goalies], 6*goalies_lineup[i] + sum{goalie_opponents[k, i]*skaters_lineup[k], k=1:num_skaters}<=6)
+ 
 
 
     # Must have at least one complete line in each lineup
