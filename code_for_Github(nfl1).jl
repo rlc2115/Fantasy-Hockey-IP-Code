@@ -710,7 +710,7 @@ function one_lineup_Type_9(skaters, goalies, lineups, num_overlap, num_skaters, 
 
 
     # Financial Constraint
-    @addConstraint(m, sum{skaters[i,:Salary]*skaters_lineup[i], i=1:num_skaters} + sum{goalies[i,:Salary]*goalies_lineup[i], i=1:num_goalies} <= 60000) 
+    @addConstraint(m, sum{skaters[i,:Salary]*skaters_lineup[i], i=1:num_skaters} + sum{goalies[i,:Salary]*goalies_lineup[i], i=1:num_goalies} <= 50000) 
     
 
     # Must have at least one complete line in each lineup
@@ -785,7 +785,7 @@ function one_lineup_Type_10(skaters, goalies, lineups, num_overlap, num_skaters,
 
 
     # Financial Constraint
-    @addConstraint(m, sum{skaters[i,:Salary]*skaters_lineup[i], i=1:num_skaters} + sum{goalies[i,:Salary]*goalies_lineup[i], i=1:num_goalies} <= 60000) 
+    @addConstraint(m, sum{skaters[i,:Salary]*skaters_lineup[i], i=1:num_skaters} + sum{goalies[i,:Salary]*goalies_lineup[i], i=1:num_goalies} <= 50000) 
     
 
     # Must have at least one complete line in each lineup
@@ -859,7 +859,7 @@ function one_lineup_Type_11(skaters, goalies, lineups, num_overlap, num_skaters,
 
 
     # Financial Constraint
-    @addConstraint(m, sum{skaters[i,:Salary]*skaters_lineup[i], i=1:num_skaters} + sum{goalies[i,:Salary]*goalies_lineup[i], i=1:num_goalies} <= 60000) 
+    @addConstraint(m, sum{skaters[i,:Salary]*skaters_lineup[i], i=1:num_skaters} + sum{goalies[i,:Salary]*goalies_lineup[i], i=1:num_goalies} <= 50000) 
     
 
     # Must have at least one complete line in each lineup
