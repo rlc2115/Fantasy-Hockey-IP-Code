@@ -790,7 +790,7 @@ function one_lineup_Type_10(skaters, goalies, lineups, num_overlap, num_skaters,
 
     # Must have at least one complete line in each lineup
     @defVar(m, line_stack[i=1:num_lines], Bin)
-    @addConstraint(m, constr[i=1:num_lines], 5*line_stack[i] <= sum{team_lines[k,i]*skaters_lineup[k], k=1:num_skaters})
+    @addConstraint(m, constr[i=1:num_lines], 4*line_stack[i] <= sum{team_lines[k,i]*skaters_lineup[k], k=1:num_skaters})
     @addConstraint(m, sum{line_stack[i], i=1:num_lines} >= 1)
 
     # Overlap Constraint
