@@ -299,7 +299,7 @@ function one_lineup_Type_3(skaters, goalies, lineups, num_overlap, num_skaters, 
 
 
     # Financial Constraint
-    @addConstraint(m, sum{skaters[i,:Salary]*skaters_lineup[i], i=1:num_skaters} + sum{goalies[i,:Salary]*goalies_lineup[i], i=1:num_goalies} <= 60000)
+    @addConstraint(m, sum{skaters[i,:Salary]*skaters_lineup[i], i=1:num_skaters} + sum{goalies[i,:Salary]*goalies_lineup[i], i=1:num_goalies} <= 50000)
 
 
     
