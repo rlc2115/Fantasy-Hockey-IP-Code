@@ -286,16 +286,16 @@ function one_lineup_Type_3(skaters, goalies, lineups, num_overlap, num_skaters, 
 
 
     # between 2 and 3 centers
-    @addConstraint(m, sum{centers[i]*skaters_lineup[i], i=1:num_skaters} <= 2)
+    @addConstraint(m, sum{centers[i]*skaters_lineup[i], i=1:num_skaters} <= 3)
     @addConstraint(m, 2 <= sum{centers[i]*skaters_lineup[i], i=1:num_skaters})
 
     # between 3 and 4 wingers
     @addConstraint(m, sum{wingers[i]*skaters_lineup[i], i=1:num_skaters} <= 4)
-    @addConstraint(m, 4<=sum{wingers[i]*skaters_lineup[i], i=1:num_skaters})
+    @addConstraint(m, 3<=sum{wingers[i]*skaters_lineup[i], i=1:num_skaters})
 
     # between 2 and 3 defenders
     @addConstraint(m, 2 <= sum{defenders[i]*skaters_lineup[i], i=1:num_skaters})
-    @addConstraint(m, sum{defenders[i]*skaters_lineup[i], i=1:num_skaters} <= 2)
+    @addConstraint(m, sum{defenders[i]*skaters_lineup[i], i=1:num_skaters} <= 3)
 
 
     # Financial Constraint
@@ -309,7 +309,7 @@ function one_lineup_Type_3(skaters, goalies, lineups, num_overlap, num_skaters, 
 
     # Must have at least one complete line in each lineup
     @defVar(m, line_stack[i=1:num_lines], Bin)
-    @addConstraint(m, constr[i=1:num_lines], 3*line_stack[i] <= sum{team_lines[k,i]*skaters_lineup[k], k=1:num_skaters})
+    @addConstraint(m, constr[i=1:num_lines], 4*line_stack[i] <= sum{team_lines[k,i]*skaters_lineup[k], k=1:num_skaters})
     @addConstraint(m, sum{line_stack[i], i=1:num_lines} >= 1)
 
 
