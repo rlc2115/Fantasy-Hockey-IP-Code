@@ -973,7 +973,7 @@ function one_lineup_Type_12(skaters, goalies, lineups, num_overlap, num_skaters,
 end
 
 # This is a function that creates one lineup using the No Stacking formulation from the paper
-function one_lineup_no_stacking(skaters, goalies, lineups, num_overlap, num_skaters, num_goalies, centers, wingers, defenders, num_teams, skaters_teams, goalie_opponents, team_lines, num_lines, P1_info)
+function one_lineup_Type_22(skaters, goalies, lineups, num_overlap, num_skaters, num_goalies, centers, wingers, defenders, num_teams, skaters_teams, goalie_opponents, team_lines, num_lines, P1_info)
     m = Model(solver=GLPKSolverMIP())
 
     # Variable for skaters in lineup.
