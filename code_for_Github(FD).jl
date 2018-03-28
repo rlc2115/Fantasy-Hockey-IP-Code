@@ -627,7 +627,7 @@ function one_lineup_Type_22(skaters, goalies, lineups, num_overlap, num_skaters,
     @addConstraint(m, constr[i=1:num_teams], sum{skaters_teams[t, i]*skaters_lineup[t], t=1:num_skaters} <= 6*used_team[i])
     @addConstraint(m, sum{used_team[i], i=1:num_teams} == 3)
     
-@addConstraint(m, constr[i=1:num_teams], sum{players_teams[t, i]*(1-P[t])*players_lineup[t], t=1:num_players}<=4)
+@addConstraint(m, constr[i=1:num_teams], sum{skaters_teams[t, i]*(1-P[t])*skaters_lineup[t], t=1:num_skaters}<=4)
 
     # No goalies going against skaters
     @addConstraint(m, constr[i=1:num_goalies], 6*goalies_lineup[i] + sum{goalie_opponents[k, i]*skaters_lineup[k], k=1:num_skaters}<=6)
