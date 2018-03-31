@@ -1435,13 +1435,13 @@ function create_lineups(num_lineups, num_overlap, path_skaters, path_goalies, fo
                         lineup[3] = string(skaters[i,1], " ", skaters[i,2])
                     elseif lineup[4] == ""
                         lineup[4] = string(skaters[i,1], " ", skaters[i,2])
-                              elseif lineup[5]==""
-                       lineup[5] = string(skaters[i,1], " ", skaters[i,2])
-                              elseif lineup[6]==""
+                      elseif lineup[5] == ""
+                        lineup[5] = string(skaters[i,1], " ", skaters[i,2])
+                    elseif lineup[6] == ""
                         lineup[6] = string(skaters[i,1], " ", skaters[i,2])
-                         
-                        
-                    elseif lineup[9] == ""
+                          elseif lineup[7] == ""
+                        lineup[7] = string(skaters[i,1], " ", skaters[i,2])
+                  elseif lineup[9] == ""
                         lineup[9] = string(skaters[i,1], " ", skaters[i,2])
                     end
                 elseif defenders[i]==1
