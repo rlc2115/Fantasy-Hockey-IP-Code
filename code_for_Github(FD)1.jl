@@ -1156,7 +1156,7 @@ function one_lineup_Type_55(skaters, goalies, lineups, num_overlap, num_skaters,
     @addConstraint(m, 1 <= sum{centers[i]*skaters_lineup[i], i=1:num_skaters})
 
     # between 3 and 4 wingers
-    @addConstraint(m, sum{wingers[i]*skaters_lineup[i], i=1:num_skaters} <= 6)
+    @addConstraint(m, sum{wingers[i]*skaters_lineup[i], i=1:num_skaters} <= 7)
     @addConstraint(m, 6<=sum{wingers[i]*skaters_lineup[i], i=1:num_skaters})
 
     # between 2 and 3 defenders
@@ -1425,24 +1425,26 @@ function create_lineups(num_lineups, num_overlap, path_skaters, path_goalies, fo
                 if centers[i]==1
                     if lineup[1]==""
                         lineup[1] = string(skaters[i,1], " ", skaters[i,2])
-                        elseif lineup[2]==""
-                        lineup[2] = string(skaters[i,1], " ", skaters[i,2])
                  elseif lineup[9] ==""
                         lineup[9] = string(skaters[i,1], " ", skaters[i,2])
                     end
                 elseif wingers[i] == 1      
-                    if lineup[3] == ""
+                    if lineup[2] == ""
+                        lineup[2] = string(skaters[i,1], " ", skaters[i,2])
+                    elseif lineup[3] == ""
                         lineup[3] = string(skaters[i,1], " ", skaters[i,2])
                     elseif lineup[4] == ""
                         lineup[4] = string(skaters[i,1], " ", skaters[i,2])
-                    elseif lineup[5] == ""
-                        lineup[5] = string(skaters[i,1], " ", skaters[i,2])
+                              elseif lineup[5]==""
+                       lineup[5] = string(skaters[i,1], " ", skaters[i,2])
+                              elseif lineup[6]==""
+                        lineup[6] = string(skaters[i,1], " ", skaters[i,2])
+                         
+                        
                     elseif lineup[9] == ""
                         lineup[9] = string(skaters[i,1], " ", skaters[i,2])
                     end
                 elseif defenders[i]==1
-                       if lineup[6] == ""
-                        lineup[6] = string(skaters[i,1], " ", skaters[i,2])
                         elseif lineup[7] ==""
                         lineup[7] = string(skaters[i,1], " ", skaters[i,2])
                     elseif lineup[9] == ""
