@@ -69,7 +69,7 @@ function one_lineup_no_stacking(skaters, goalies, lineups, num_overlap, num_skat
     @addConstraint(m, sum{defenders[i]*skaters_lineup[i], i=1:num_skaters} <= 2)
 
     # Financial Constraint
-    @addConstraint(m, sum{skaters[i,:Salary]*skaters_lineup[i], i=1:num_skaters} + sum{goalies[i,:Salary]*goalies_lineup[i], i=1:num_goalies} <= 50000)
+    @addConstraint(m, sum{skaters[i,:Salary]*skaters_lineup[i], i=1:num_skaters} + sum{goalies[i,:Salary]*goalies_lineup[i], i=1:num_goalies} <= 49900)
 
     
 
